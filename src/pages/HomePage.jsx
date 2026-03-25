@@ -1,0 +1,246 @@
+import React, { useState, useRef } from 'react';
+import { createEvent, uploadFile, supabase } from '../store.js';
+import { useAuth } from '../contexts/AuthContext';
+import { API_BASE } from '../config.js';
+
+const Landing = ({ onNavigate }) => (
+  <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    {/* Hero */}
+    <div style={{ position: 'relative', overflow: 'hidden', padding: '100px 24px 80px', textAlign: 'center', background: 'linear-gradient(160deg, #fff9f0 0%, var(--cream) 60%)' }}>
+      <div style={{ position: 'absolute', top: '10%', left: '8%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '5%', right: '5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+      <div className="fade-up" style={{ marginBottom: 20 }}>
+        <span className="badge badge-gold">✦ Event Photo Sharing</span>
+      </div>
+      <h1 className="serif fade-up-2" style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 300, lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: 24 }}>
+        Every moment,<br /><em style={{ color: 'var(--gold-dark)' }}>captured together.</em>
+      </h1>
+      <p className="fade-up-3" style={{ fontSize: '1.05rem', color: 'var(--muted)', maxWidth: 480, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 300 }}>
+        One QR code per event. Guests scan, snap, and share — all photos land in a single beautiful gallery, instantly.
+      </p>
+      <div className="fade-up-4" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button className="btn-gold" onClick={() => onNavigate('create')} style={{ padding: '16px 40px', borderRadius: 3, fontSize: '0.8rem' }}>
+          Create Your Event
+        </button>
+        <button className="btn-outline" onClick={() => onNavigate('join')} style={{ padding: '16px 40px', borderRadius: 3, fontSize: '0.8rem' }}>
+          Join with Code
+        </button>
+      </div>
+    </div>
+
+    {/* How it works */}
+    <div style={{ padding: '80px 24px', maxWidth: 900, margin: '0 auto' }}>
+      <div className="divider" style={{ marginBottom: 60 }}>How It Works</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40 }}>
+        {[
+          { n: '01', icon: '✦', title: 'Create Your Event', desc: 'Enter your event details and we generate a unique QR code in seconds.' },
+          { n: '02', icon: '◈', title: 'Share the QR Code', desc: 'Print it, display it at the venue, or send it digitally — whatever works for you.' },
+          { n: '03', icon: '⬡', title: 'Guests Snap & Upload', desc: 'Guests scan the code and upload photos straight from their phone camera.' },
+          { n: '04', icon: '❋', title: 'One Live Gallery', desc: 'All photos appear in a shared gallery instantly. Download them all at any time.' },
+        ].map((s) => (
+          <div key={s.n} style={{ position: 'relative' }}>
+            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '3.5rem', fontWeight: 300, color: 'rgba(201,168,76,0.18)', lineHeight: 1, marginBottom: 16 }}>{s.n}</div>
+            <div style={{ fontSize: '1.2rem', marginBottom: 12, color: 'var(--gold)' }}>{s.icon}</div>
+            <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 10 }}>{s.title}</h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--muted)', lineHeight: 1.7, fontWeight: 300 }}>{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* CTA strip */}
+    <div style={{ background: 'var(--charcoal)', padding: '60px 24px', textAlign: 'center' }}>
+      <h2 className="serif" style={{ fontSize: '2.2rem', color: 'white', fontWeight: 300, marginBottom: 12 }}>Ready to make memories?</h2>
+      <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 32, fontWeight: 300 }}>Free to try. No account needed.</p>
+      <button className="btn-gold" onClick={() => onNavigate('create')} style={{ padding: '16px 48px', borderRadius: 3 }}>
+        Get Started Free
+      </button>
+    </div>
+
+    {/* Photographer Pro section */}
+    <div style={{ padding: '60px 24px', textAlign: 'center', background: 'linear-gradient(160deg, var(--cream) 0%, #fff9f0 100%)' }}>
+      <p style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: 12 }}>For Professionals</p>
+      <h3 className="serif" style={{ fontSize: '1.8rem', fontWeight: 300, marginBottom: 8 }}>Are you a professional photographer?</h3>
+      <p style={{ color: 'var(--muted)', fontSize: '0.92rem', fontWeight: 300, marginBottom: 24, maxWidth: 500, margin: '0 auto 24px' }}>
+        Photographer Pro — £19/month. Unlimited premium events, bulk uploads, client dashboards, and no branding.
+      </p>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+        <button className="btn-gold" onClick={() => onNavigate('proSignup')} style={{ padding: '12px 32px', borderRadius: 3, fontSize: '0.78rem' }}>
+          Sign Up
+        </button>
+        <button className="btn-outline" onClick={() => onNavigate('proLogin')} style={{ padding: '12px 32px', borderRadius: 3, fontSize: '0.78rem' }}>
+          Log In
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const CreateEvent = ({ onNavigate, toast }) => {
+  const { user } = useAuth();
+  const [form, setForm] = useState({ title: '', subtitle: '', date: '', host: '', event_slug: '' });
+  const [coverFile, setCoverFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [slugError, setSlugError] = useState('');
+  const coverRef = useRef();
+
+  const validateSlug = (value) => {
+    if (!value) return true;
+    return /^[a-z0-9-]+$/.test(value) && value.length <= 40;
+  };
+
+  const handleSlugChange = (value) => {
+    const cleaned = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setForm((f) => ({ ...f, event_slug: cleaned }));
+    setSlugError('');
+  };
+
+  const handleCreate = async () => {
+    if (!form.title || !form.date) {
+      toast.show('Please fill in event name and date');
+      return;
+    }
+
+    if (form.event_slug && !validateSlug(form.event_slug)) {
+      setSlugError('Only lowercase letters, numbers, and hyphens allowed (max 40 chars)');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let coverUrl = null;
+      if (coverFile) {
+        const { publicUrl, error: uploadErr } = await uploadFile('covers', coverFile);
+        if (uploadErr) {
+          toast.show('Cover photo upload failed. Event created without cover.');
+        } else {
+          coverUrl = publicUrl;
+        }
+      }
+
+      // Link to Pro photographer account if logged in
+      const proAuth = JSON.parse(localStorage.getItem('proAuth') || 'null');
+      const photographerId = proAuth?.subscriptionStatus === 'active' ? proAuth.id : null;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(`${API_BASE}/.netlify/functions/create-event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: form.title,
+          subtitle: form.subtitle,
+          date: form.date,
+          host: form.host,
+          event_slug: form.event_slug || null,
+          cover_photo_url: coverUrl,
+          photographer_id: photographerId,
+          hostEmail: user.email,
+          accessToken: session?.access_token,
+        }),
+      });
+      const { data, error } = await response.json();
+
+      if (error) {
+        if (error.message?.includes('event_slug') || error.code === '23505') {
+          setSlugError('That URL is already taken');
+          setLoading(false);
+          return;
+        }
+        toast.show('Could not create event. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      window.location.hash = `#/host/${data.id}`;
+    } catch (e) {
+      toast.show('Could not save your event. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const field = (key, label, type = 'text', placeholder = '') => (
+    <div style={{ marginBottom: 24 }}>
+      <label style={{ display: 'block', fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>{label}</label>
+      <input
+        type={type}
+        value={form[key]}
+        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+        placeholder={placeholder}
+        style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '13px 16px', fontSize: '0.95rem', background: 'white', color: 'var(--charcoal)' }}
+      />
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+      <div style={{ width: '100%', maxWidth: 500, animation: 'fadeUp 0.5s ease' }}>
+        <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.82rem', letterSpacing: '0.08em', marginBottom: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
+          ← Back
+        </button>
+        <h2 className="serif" style={{ fontSize: '2.8rem', fontWeight: 300, marginBottom: 8 }}>Create Event</h2>
+        <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: 48, fontWeight: 300 }}>Your unique QR code will be generated instantly.</p>
+
+        <div style={{ background: 'white', borderRadius: 6, padding: '40px', boxShadow: 'var(--shadow)' }}>
+          {field('title', 'Event Name *', 'text', "Sarah & James's Wedding")}
+          {field('subtitle', 'Tagline or Venue', 'text', 'The Grand Ballroom, New York')}
+          {field('date', 'Event Date *', 'date')}
+          {field('host', 'Hosted by', 'text', 'The Johnson Family')}
+
+          {/* Custom URL */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ display: 'block', fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>Custom URL (optional)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--muted)', padding: '13px 0 13px 16px', background: 'var(--cream)', border: '1px solid var(--border)', borderRight: 'none', borderRadius: '3px 0 0 3px', whiteSpace: 'nowrap' }}>eventsnapapp.live/event/</span>
+              <input
+                type="text"
+                value={form.event_slug}
+                onChange={(e) => handleSlugChange(e.target.value)}
+                placeholder="e.g. tomi-wedding"
+                maxLength={40}
+                style={{ flex: 1, border: '1px solid var(--border)', borderRadius: '0 3px 3px 0', padding: '13px 16px', fontSize: '0.95rem', background: 'white', color: 'var(--charcoal)' }}
+              />
+            </div>
+            {slugError && <p style={{ color: '#e53e3e', fontSize: '0.78rem', marginTop: 4 }}>{slugError}</p>}
+          </div>
+
+          {/* Cover photo */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ display: 'block', fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>Cover Photo (optional)</label>
+            <input
+              ref={coverRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setCoverFile(e.target.files[0] || null)}
+              style={{ display: 'none' }}
+            />
+            <button
+              className="btn-outline"
+              onClick={() => coverRef.current?.click()}
+              style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}
+            >
+              {coverFile ? coverFile.name : 'Choose Cover Photo'}
+            </button>
+          </div>
+
+          <button
+            className="btn-gold"
+            onClick={handleCreate}
+            disabled={loading}
+            style={{ width: '100%', padding: '16px', borderRadius: 3, marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}
+          >
+            {loading ? <><div className="loader" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }} /> Creating...</> : 'Create Event & Get QR Code'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HomePage = ({ screen, onNavigate, toast }) => {
+  if (screen === 'create') return <CreateEvent onNavigate={onNavigate} toast={toast} />;
+  return <Landing onNavigate={onNavigate} />;
+};
+
+export default HomePage;
+export { Landing, CreateEvent };

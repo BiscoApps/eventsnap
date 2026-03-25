@@ -1,0 +1,13 @@
+# Stripe cannot preserve # fragments in redirect URLs.
+# These rules catch the non-hash paths Stripe redirects to
+# and forward them to the hash-based SPA routes.
+
+/event/:code              /#/event/:code              302
+/host/:code               /#/host/:code               302
+/pro/dashboard            /#/pro/dashboard             302
+/pro/signup               /#/pro/signup                302
+/slideshow/:code          /#/slideshow/:code           302
+/reel/:code               /#/reel/:code                302
+
+# SPA fallback — serve index.html for all other routes
+/*                        /index.html                  200
