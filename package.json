@@ -9,6 +9,10 @@
     "deploy": "vite build && netlify deploy --prod"
   },
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "@stripe/stripe-js": "^8.9.0",
     "@supabase/supabase-js": "^2.99.2",
     "aws-sdk": "^2.1693.0",

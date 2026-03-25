@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EventSnap</string>
+    <string name="title_activity_main">EventSnap</string>
+    <string name="package_name">com.eventsnap.app</string>
+    <string name="custom_url_scheme">com.eventsnap.app</string>
+</resources>

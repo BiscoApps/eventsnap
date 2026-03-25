@@ -1,5 +1,5 @@
-# Local Netlify folder
-.netlify
-
-# Environment files
-.env*
+{
+  "appId": "com.eventsnap.app",
+  "appName": "EventSnap",
+  "webDir": "dist"
+}
