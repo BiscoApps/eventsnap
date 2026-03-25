@@ -1,0 +1,51 @@
+workflows:
+  ios-release:
+    name: EventSnap iOS Release
+    max_build_duration: 60
+    environment:
+      vars:
+        VITE_NATIVE_APP: "true"
+        VITE_API_BASE_URL: "https://eventsnapapp.live"
+      node: 18.17.0
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Build web app
+        script: npm run build
+      - name: Capacitor sync
+        script: npx cap sync ios
+      - name: Install CocoaPods
+        script: |
+          cd ios/App
+          pod install
+    artifacts:
+      - ios/App/App.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+
+  android-release:
+    name: EventSnap Android Release
+    max_build_duration: 60
+    environment:
+      vars:
+        VITE_NATIVE_APP: "true"
+        VITE_API_BASE_URL: "https://eventsnapapp.live"
+      node: 18.17.0
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Build web app
+        script: npm run build
+      - name: Capacitor sync
+        script: npx cap sync android
+      - name: Build Android release
+        script: |
+          cd android
+          ./gradlew assembleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/**/*.aab
