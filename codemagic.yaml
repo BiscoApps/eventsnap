@@ -20,12 +20,10 @@ workflows:
         script: |
           cd ios/App
           pod install
+
     artifacts:
       - ios/App/App.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        auth: integration
 
   android-release:
     name: EventSnap Android Release
