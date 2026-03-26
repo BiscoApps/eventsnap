@@ -6,9 +6,6 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.eventsnapapp.ios
       vars:
         VITE_NATIVE_APP: "true"
         VITE_API_BASE_URL: "https://eventsnapapp.live"
