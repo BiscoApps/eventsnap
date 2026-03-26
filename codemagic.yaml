@@ -36,7 +36,6 @@ workflows:
             --create
           keychain initialize
           keychain add-certificates
-          xcode-project use-profiles
       - name: Build iOS
         script: |
           xcode-project build-ipa \
