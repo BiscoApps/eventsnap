@@ -31,7 +31,7 @@ workflows:
       - name: Save API key to file
         script: |
           mkdir -p ~/private_keys
-          echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/private_keys/AuthKey.p8
+          printf '%s\n' "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/private_keys/AuthKey.p8
           API_KEY_PATH=~/private_keys/AuthKey.p8
       - name: Build iOS
         script: |
