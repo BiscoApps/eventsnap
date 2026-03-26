@@ -28,15 +28,21 @@ workflows:
         script: |
           cd ios/App
           pod install --repo-update
+      - name: Save API key to file
+        script: |
+          mkdir -p ~/private_keys
+          echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/private_keys/AuthKey.p8
+          API_KEY_PATH=~/private_keys/AuthKey.p8
       - name: Build iOS
         script: |
+          API_KEY_PATH=~/private_keys/AuthKey.p8
           ARCHIVE_PATH=build/ios/xcarchive/App.xcarchive
           xcodebuild -workspace "$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -config Release \
             -archivePath "$ARCHIVE_PATH" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$APP_STORE_CONNECT_PRIVATE_KEY" \
+            -authenticationKeyPath "$API_KEY_PATH" \
             -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
             archive \
@@ -47,7 +53,7 @@ workflows:
             -exportOptionsPlist ios/App/exportOptions.plist \
             -exportPath build/ios/ipa \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$APP_STORE_CONNECT_PRIVATE_KEY" \
+            -authenticationKeyPath "$API_KEY_PATH" \
             -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID"
     artifacts:
