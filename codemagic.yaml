@@ -28,14 +28,6 @@ workflows:
         script: |
           cd ios/App
           pod install --repo-update
-      - name: Set up code signing
-        script: |
-          app-store-connect fetch-signing-files \
-            "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create
-          keychain initialize
-          keychain add-certificates
       - name: Build iOS
         script: |
           ARCHIVE_PATH=build/ios/xcarchive/App.xcarchive
