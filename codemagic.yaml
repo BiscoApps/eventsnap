@@ -28,34 +28,20 @@ workflows:
         script: |
           cd ios/App
           pod install --repo-update
-      - name: Save API key to file
+      - name: Set up code signing
         script: |
-          mkdir -p ~/private_keys
-          printf '%s\n' "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/private_keys/AuthKey.p8
-          API_KEY_PATH=~/private_keys/AuthKey.p8
+          app-store-connect fetch-signing-files \
+            "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Build iOS
         script: |
-          API_KEY_PATH=~/private_keys/AuthKey.p8
-          ARCHIVE_PATH=build/ios/xcarchive/App.xcarchive
-          xcodebuild -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -config Release \
-            -archivePath "$ARCHIVE_PATH" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$API_KEY_PATH" \
-            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
-            archive \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM=4U9D9694C8
-          xcodebuild -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
-            -exportOptionsPlist ios/App/exportOptions.plist \
-            -exportPath build/ios/ipa \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$API_KEY_PATH" \
-            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID"
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
