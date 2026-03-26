@@ -13,6 +13,8 @@ workflows:
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
         APP_STORE_APPLE_ID: "6744626841"
+      groups:
+        - ios_signing
       node: 22.11.0
       xcode: latest
       cocoapods: default
