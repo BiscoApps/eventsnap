@@ -36,7 +36,6 @@ workflows:
             --create
           keychain initialize
           keychain add-certificates
-          xcode-project use-profiles
       - name: Build iOS
         script: |
           ARCHIVE_PATH=build/ios/xcarchive/App.xcarchive
@@ -44,12 +43,15 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -config Release \
             -archivePath "$ARCHIVE_PATH" \
+            -allowProvisioningUpdates \
             archive \
+            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM=4U9D9694C8
           xcodebuild -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
             -exportOptionsPlist ios/App/exportOptions.plist \
-            -exportPath build/ios/ipa
+            -exportPath build/ios/ipa \
+            -allowProvisioningUpdates
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
