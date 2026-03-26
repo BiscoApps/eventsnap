@@ -30,12 +30,12 @@ workflows:
           pod install --repo-update
       - name: Set up API key
         script: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" | sed 's/\\n/\n/g' > "$KEY_PATH"
       - name: Build iOS
         script: |
-          API_KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          API_KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
           ARCHIVE_PATH=build/ios/xcarchive/App.xcarchive
           xcodebuild -workspace "$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
