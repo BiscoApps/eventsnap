@@ -16,6 +16,8 @@ workflows:
       node: 22.11.0
       xcode: latest
       cocoapods: default
+      certificate:
+        - EventSnap Distribution
     scripts:
       - name: Install npm dependencies
         script: npm install
