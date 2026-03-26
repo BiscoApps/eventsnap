@@ -30,13 +30,13 @@ workflows:
           pod install --repo-update
       - name: Set up code signing
         script: |
+          keychain initialize
           app-store-connect fetch-signing-files \
-            "$BUNDLE_ID" \
+            com.eventsnapapp.ios \
             --type IOS_APP_STORE \
             --create
-          keychain initialize
           keychain add-certificates
-          xcode-project use-profiles
+          xcode-project use-profiles --type app-store
       - name: Build iOS
         script: |
           xcode-project build-ipa \
