@@ -1,5 +1,0 @@
-{
-  "appId": "com.eventsnap.app",
-  "appName": "EventSnap",
-  "webDir": "dist"
-}
