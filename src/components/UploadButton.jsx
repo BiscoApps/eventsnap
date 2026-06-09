@@ -137,7 +137,7 @@ const UploadButton = ({ event, onPhotoAdded }) => {
       )}
 
       {limitReached && (
-        <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.25)', borderRadius: 4, padding: '14px', marginBottom: 16, textAlign: 'center' }}>
+        <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.08))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.25))', borderRadius: 4, padding: '14px', marginBottom: 16, textAlign: 'center' }}>
           <p style={{ fontSize: '0.88rem', color: 'var(--charcoal)', marginBottom: 8 }}>
             You've reached the free plan limit of 100 photos and videos.<br />
             Upgrade to Premium to continue collecting memories.

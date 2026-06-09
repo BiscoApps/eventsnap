@@ -15,9 +15,11 @@ import { useAuth } from './contexts/AuthContext';
 import QRCode from './components/QRCode.jsx';
 import Gallery from './components/Gallery.jsx';
 import Lightbox from './components/Lightbox.jsx';
+import Home from './pages/Home.jsx';
 
 const FONT_STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+  /* TODO(iOS Capacitor): Space Grotesk must be bundled offline for the native build; the @import below is a web-only fallback. */
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -38,6 +40,27 @@ const FONT_STYLE = `
   body { background: var(--cream); font-family: 'Jost', sans-serif; color: var(--charcoal); }
 
   .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+  [data-theme="film"] {
+    --bg: #14110E;
+    --header-bg: #14110E;
+    --accent: #FF8A1E;
+    --text: #F2E8DB;
+    --text-soft: rgba(242,232,219,0.7);
+    --text-faint: rgba(242,232,219,0.45);
+    --badge-bg: rgba(255,138,30,0.15);
+    --badge-text: #FF8A1E;
+    --gold: var(--accent);
+    --gold-dark: #FF8A1E;
+    --gold-light: #FFB35C;
+    --accent-tint-faint: rgba(255,138,30,0.05);
+    --accent-tint-soft: rgba(255,138,30,0.1);
+    --accent-tint-medium: rgba(255,138,30,0.15);
+    --accent-ring: rgba(255,138,30,0.2);
+    --muted: rgba(242,232,219,0.55);
+    --border: rgba(242,232,219,0.15);
+  }
+  [data-theme="film"] .serif { font-family: 'Jost', sans-serif; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -103,7 +126,7 @@ const FONT_STYLE = `
   }
   input:focus, textarea:focus {
     border-color: var(--gold) !important;
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    box-shadow: 0 0 0 3px var(--accent-ring, rgba(201,168,76,0.12));
   }
 
   .divider {
@@ -166,11 +189,11 @@ const FONT_STYLE = `
     border: 2px dashed var(--gold-light);
     border-radius: 8px;
     transition: all 0.2s ease;
-    background: rgba(201,168,76,0.03);
+    background: var(--accent-tint-faint, rgba(201,168,76,0.03));
   }
   .drop-zone.drag-over {
     border-color: var(--gold);
-    background: rgba(201,168,76,0.08);
+    background: var(--accent-tint-soft, rgba(201,168,76,0.08));
     transform: scale(1.01);
   }
 
@@ -184,7 +207,7 @@ const FONT_STYLE = `
     letter-spacing: 0.08em;
     font-weight: 500;
   }
-  .badge-gold { background: rgba(201,168,76,0.12); color: var(--gold-dark); }
+  .badge-gold { background: var(--accent-tint-medium, rgba(201,168,76,0.12)); color: var(--gold-dark); }
   .badge-green { background: rgba(72,187,120,0.12); color: #276749; }
 
   .toast {
@@ -554,7 +577,7 @@ export default function App() {
         </div>
       )}
 
-      {route.screen === 'home' && <Landing onNavigate={navigate} />}
+      {route.screen === 'home' && <Home onNavigate={navigate} />}
       {route.screen === 'create' && (user ? <CreateEvent onNavigate={navigate} toast={toast} /> : <SignInPage onNavigate={navigate} />)}
       {route.screen === 'signin' && <SignInPage onNavigate={navigate} />}
       {route.screen === 'signup' && <SignUpPage onNavigate={navigate} />}

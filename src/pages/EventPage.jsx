@@ -162,7 +162,8 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
     : photos;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', flexDirection: 'column' }}>
+    <div data-theme={event.theme || 'classic'}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg, var(--cream))', display: 'flex', flexDirection: 'column' }}>
       <EventHeader event={event} photoCount={photoCount} />
       <div style={{ flex: 1, display: isNativeApp ? 'flex' : 'block', overflow: 'hidden' }}>
         {isNativeApp ? (
@@ -189,16 +190,23 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
             </div>
           </>
         ) : (
-          <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px' }}>
+          <div style={{ maxWidth: 760, margin: '0 auto', padding: event.theme === 'film' ? '0 24px 40px' : '40px 24px' }}>
+            {event.theme === 'film' && (
+              <>
+                <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
+                <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />
+                <UploadButton event={event} onPhotoAdded={loadPhotos} />
+              </>
+            )}
             {upgradeBanner && (
-              <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 6, padding: '14px 20px', marginBottom: 20, textAlign: 'center', fontSize: '0.9rem', color: 'var(--charcoal)' }}>
+              <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.1))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.3))', borderRadius: 6, padding: '14px 20px', marginBottom: 20, textAlign: 'center', fontSize: '0.9rem', color: 'var(--charcoal)' }}>
                 Upgrade successful! Your event now has Premium features.
                 <button onClick={() => setUpgradeBanner(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: 12, color: 'var(--muted)', fontSize: '0.85rem' }}>✕</button>
               </div>
             )}
-            <UploadButton event={event} onPhotoAdded={loadPhotos} />
+            {event.theme !== 'film' && <UploadButton event={event} onPhotoAdded={loadPhotos} />}
             {faceFilter && faceFilter.length > 0 && (
-              <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 4, padding: '10px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.08))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 4, padding: '10px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '0.88rem', color: 'var(--charcoal)' }}>
                   {faceFilter.length} photo{faceFilter.length !== 1 ? 's' : ''} and video{faceFilter.length !== 1 ? 's' : ''} featuring you
                 </span>
@@ -236,11 +244,15 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
                 </div>
               </div>
             )}
-            <div className="divider" style={{ marginBottom: 28 }}>
-              {displayPhotos.length > 0 ? `${displayPhotos.length} Photo${displayPhotos.length !== 1 ? 's' : ''} and Video${displayPhotos.length !== 1 ? 's' : ''} Shared` : 'Gallery'}
-            </div>
-            <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
-            <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />
+            {event.theme !== 'film' && (
+              <>
+                <div className="divider" style={{ marginBottom: 28 }}>
+                  {displayPhotos.length > 0 ? `${displayPhotos.length} Photo${displayPhotos.length !== 1 ? 's' : ''} and Video${displayPhotos.length !== 1 ? 's' : ''} Shared` : 'Gallery'}
+                </div>
+                <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
+                <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />
+              </>
+            )}
             {!event.photographer_id && (
               <div style={{ textAlign: 'center', padding: '24px 20px 32px', fontSize: '0.72rem', color: 'var(--muted)', letterSpacing: '0.05em' }}>
                 Powered by EventSnap · eventsnapapp.live
@@ -249,6 +261,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };

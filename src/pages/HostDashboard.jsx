@@ -20,6 +20,10 @@ const formatDateTime = (d) => {
   return `${formatDate(d)} at ${dt.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase()}`;
 };
 
+const ALLOWED_THEMES = ['classic', 'film'];
+const PREMIUM_THEMES = []; // none premium yet; wired for future use
+const validateTheme = (v) => ALLOWED_THEMES.includes(v) ? v : 'classic';
+
 const ReelPhotoGrid = React.memo(({ photos, reelPhotoIds, onToggle }) => (
   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: 6, maxHeight: 280, overflowY: 'auto', marginBottom: 16 }}>
     {photos.map((p) => {
@@ -843,6 +847,62 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               </button>
             </>
           )}
+        </div>
+
+        {/* ─── Gallery Theme ─────────────────────────────────────────── */}
+        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+          <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 8 }}>Gallery Theme</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 20 }}>Choose how the guest gallery looks.</p>
+          {[
+            { family: 'LUXE', themes: ['classic'] },
+            { family: 'LIVE', themes: ['film'] },
+          ].map((group) => (
+            <div key={group.family} style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
+                {group.family}
+              </label>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {group.themes.map((th) => {
+                  const current = validateTheme(event.theme);
+                  const selected = current === th;
+                  const isPremiumTheme = PREMIUM_THEMES.includes(th);
+                  const locked = isPremiumTheme && !isPremium;
+                  return (
+                    <button
+                      key={th}
+                      disabled={locked}
+                      onClick={async () => {
+                        if (locked) return;
+                        const next = validateTheme(th);
+                        await updateEvent(eventCode, { theme: next });
+                        await loadEvent();
+                      }}
+                      style={{
+                        padding: '8px 18px',
+                        borderRadius: 3,
+                        fontSize: '0.78rem',
+                        fontFamily: 'Jost, sans-serif',
+                        cursor: locked ? 'not-allowed' : 'pointer',
+                        opacity: locked ? 0.55 : 1,
+                        border: selected ? '1px solid var(--gold)' : '1px solid var(--border)',
+                        background: selected ? 'rgba(201,168,76,0.1)' : 'white',
+                        color: selected ? 'var(--gold-dark)' : 'var(--charcoal)',
+                        textTransform: 'capitalize',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      {th}
+                      {locked && (
+                        <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: 'var(--muted)', textTransform: 'uppercase' }}>Premium</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ─── Slideshow Settings — Premium ─────────────────────────── */}
