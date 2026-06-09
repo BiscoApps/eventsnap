@@ -183,7 +183,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
                   ← Camera
                 </button>
                 <UploadButton event={event} onPhotoAdded={loadPhotos} />
-                <Gallery photos={displayPhotos} eventName={event.title} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
+                <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
                 <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />
               </div>
             </div>
@@ -239,7 +239,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
             <div className="divider" style={{ marginBottom: 28 }}>
               {displayPhotos.length > 0 ? `${displayPhotos.length} Photo${displayPhotos.length !== 1 ? 's' : ''} and Video${displayPhotos.length !== 1 ? 's' : ''} Shared` : 'Gallery'}
             </div>
-            <Gallery photos={displayPhotos} eventName={event.title} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
+            <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
             <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />
             {!event.photographer_id && (
               <div style={{ textAlign: 'center', padding: '24px 20px 32px', fontSize: '0.72rem', color: 'var(--muted)', letterSpacing: '0.05em' }}>

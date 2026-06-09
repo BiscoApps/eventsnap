@@ -7,6 +7,21 @@ const formatTime = (dateStr) => {
   return d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
 };
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd} ${mm} '${yy}`;
+};
+
+const THEMES = {
+  classic: { stampBg: 'rgba(0,0,0,0.55)', stampText: '#ffffff', showDate: false, grain: false },
+  film:    { stampBg: '#FFF7EC',          stampText: '#FF5A1F', showDate: true,  grain: true  },
+};
+
 const VideoThumbnail = ({ src }) => {
   const [thumb, setThumb] = useState(null);
 
@@ -119,41 +134,49 @@ const handleShare = async (fileUrl, fileName, eventName) => {
   }
 };
 
-const PhotoGrid = ({ items, eventName, onPhotoClick, large }) => (
-  <div style={large ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 } : undefined} className={large ? undefined : 'photo-grid'}>
-    {items.map((p) => {
-      const isVideo = p.media_type === 'video';
-      const fileName = p.image_url?.split('/').pop() || 'photo';
-      const time = formatTime(p.taken_at);
+const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' }) => {
+  const t = THEMES[theme] || THEMES.classic;
+  return (
+    <div style={large ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 } : undefined} className={large ? undefined : 'photo-grid'}>
+      {items.map((p) => {
+        const isVideo = p.media_type === 'video';
+        const fileName = p.image_url?.split('/').pop() || 'photo';
+        const time = formatTime(p.taken_at);
+        const date = formatDate(p.taken_at);
 
-      return (
-        <div key={p.id} className="photo-card" onClick={() => onPhotoClick(p)}>
-          {isVideo ? (
-            <VideoThumbnail src={p.image_url} />
-          ) : (
-            <img src={p.image_url} alt="" loading="lazy" />
-          )}
-          {time && (
-            <div style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(0,0,0,0.55)', color: 'white', padding: '2px 6px', borderRadius: 3, fontSize: '0.68rem', pointerEvents: 'none' }}>
-              {time}
-            </div>
-          )}
-          <div className="overlay">
-            <p style={{ color: 'white', fontSize: '0.72rem', letterSpacing: '0.05em', marginBottom: 4 }}>
-              {p.uploader_name || 'Guest'}
-            </p>
-            <div style={{ display: 'flex', gap: 8, marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
-              <button onClick={() => handleSave(p.image_url, fileName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Save</button>
-              <button onClick={() => handleShare(p.image_url, fileName, eventName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Share</button>
+        return (
+          <div key={p.id} className="photo-card" onClick={() => onPhotoClick(p)}>
+            {isVideo ? (
+              <VideoThumbnail src={p.image_url} />
+            ) : (
+              <img src={p.image_url} alt="" loading="lazy" />
+            )}
+            {t.grain && (
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1.5px, transparent 3px)', opacity: 0.4, mixBlendMode: 'overlay' }} />
+            )}
+            {time && (
+              <div style={{ position: 'absolute', top: 6, right: 6, background: t.stampBg, color: t.stampText, padding: '2px 6px', borderRadius: 3, fontSize: '0.68rem', pointerEvents: 'none' }}>
+                {t.showDate && date && <div>{date}</div>}
+                {time}
+              </div>
+            )}
+            <div className="overlay">
+              <p style={{ color: 'white', fontSize: '0.72rem', letterSpacing: '0.05em', marginBottom: 4 }}>
+                {p.uploader_name || 'Guest'}
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => handleSave(p.image_url, fileName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Save</button>
+                <button onClick={() => handleShare(p.image_url, fileName, eventName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Share</button>
+              </div>
             </div>
           </div>
-        </div>
-      );
-    })}
-  </div>
-);
+        );
+      })}
+    </div>
+  );
+};
 
-const Gallery = ({ photos, eventName, onPhotoClick }) => {
+const Gallery = ({ photos, eventName, onPhotoClick, theme = 'classic' }) => {
   if (photos.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', opacity: 0.5 }}>
@@ -174,12 +197,12 @@ const Gallery = ({ photos, eventName, onPhotoClick }) => {
             <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold-dark)', fontWeight: 500 }}>Photographer's Album</span>
             <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>{proPhotos.length}</span>
           </div>
-          <PhotoGrid items={proPhotos} eventName={eventName} onPhotoClick={onPhotoClick} large />
+          <PhotoGrid items={proPhotos} eventName={eventName} onPhotoClick={onPhotoClick} theme={theme} large />
         </div>
       )}
 
       {guestPhotos.length > 0 && (
-        <PhotoGrid items={guestPhotos} eventName={eventName} onPhotoClick={onPhotoClick} />
+        <PhotoGrid items={guestPhotos} eventName={eventName} onPhotoClick={onPhotoClick} theme={theme} />
       )}
     </div>
   );

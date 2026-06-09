@@ -54,12 +54,12 @@ export const createEvent = async ({ title, subtitle, date, host, host_password, 
 };
 
 export const getEvent = async (code) => {
-  const { data, error } = await supabase.from('events_public').select('id, title, subtitle, date, host, plan, created_at, event_slug, cover_photo_url, status, max_photos, max_guests, expires_at, brand_color, slideshow_transition, face_tagging_enabled, highlight_reel_url, photographer_id, moderation_enabled, slideshow_photo_ids').eq('id', code).single();
+  const { data, error } = await supabase.from('events_public').select('id, title, subtitle, date, host, plan, created_at, event_slug, cover_photo_url, status, max_photos, max_guests, expires_at, brand_color, slideshow_transition, face_tagging_enabled, highlight_reel_url, photographer_id, moderation_enabled, slideshow_photo_ids, theme').eq('id', code).single();
   return { data, error };
 };
 
 export const getEventBySlug = async (slug) => {
-  const { data, error } = await supabase.from('events_public').select('id, title, subtitle, date, host, plan, created_at, event_slug, cover_photo_url, status, max_photos, max_guests, expires_at, brand_color, slideshow_transition, face_tagging_enabled, highlight_reel_url, photographer_id, moderation_enabled, slideshow_photo_ids').eq('event_slug', slug).single();
+  const { data, error } = await supabase.from('events_public').select('id, title, subtitle, date, host, plan, created_at, event_slug, cover_photo_url, status, max_photos, max_guests, expires_at, brand_color, slideshow_transition, face_tagging_enabled, highlight_reel_url, photographer_id, moderation_enabled, slideshow_photo_ids, theme').eq('event_slug', slug).single();
   return { data, error };
 };
 
