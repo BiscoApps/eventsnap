@@ -55,13 +55,31 @@ exports.handler = async (event) => {
     // Verify photo exists and belongs to the claimed event
     const { data: photoRow, error: photoError } = await supabase
       .from('photos')
-      .select('id, event_id')
+      .select('id, event_id, face_vectors')
       .eq('id', photoId)
       .eq('event_id', eventId)
       .single();
 
     if (photoError || !photoRow) {
       return { statusCode: 404, body: JSON.stringify({ error: 'Photo not found' }) };
+    }
+
+    // Idempotency guard: if this photo has already been indexed, skip AWS entirely.
+    // Caps cost at exactly one IndexFaces call per photo, ever — replaying is free.
+    if (photoRow.face_vectors) {
+      return { statusCode: 200, body: JSON.stringify({ ok: true, alreadyIndexed: true }) };
+    }
+
+    // Server-side face-tagging gate (client check is bypassable).
+    // Uses the same service-role read pattern as the photo lookup above.
+    const { data: eventRow } = await supabase
+      .from('events')
+      .select('face_tagging_enabled')
+      .eq('id', eventId)
+      .single();
+
+    if (!eventRow || !eventRow.face_tagging_enabled) {
+      return { statusCode: 200, body: JSON.stringify({ ok: true, faceTaggingDisabled: true }) };
     }
 
     const allowedHost = new URL(process.env.SUPABASE_URL).hostname;
