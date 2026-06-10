@@ -2,10 +2,11 @@ import React from 'react';
 
 const Home = ({ onNavigate }) => {
   return (
+    <div data-theme="neutral">
     <div style={{
       minHeight: '100vh',
-      background: '#F5EFE7',
-      color: '#2c2c2c',
+      background: 'var(--bg, #F5EFE7)',
+      color: 'var(--charcoal, #2c2c2c)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -18,16 +19,16 @@ const Home = ({ onNavigate }) => {
         </h1>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem', letterSpacing: '0.32em', fontWeight: 500 }}>
           <span style={{ color: '#FF5A1F' }}>LIVE</span>
-          <span style={{ color: '#7a7065', fontSize: '0.7rem', letterSpacing: '0.1em' }}>or</span>
+          <span style={{ color: 'var(--muted, #7a7065)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>or</span>
           <span style={{ color: '#c9a84c' }}>LUXE</span>
         </div>
       </div>
 
       <div style={{ textAlign: 'center', maxWidth: 560, marginBottom: 36, animation: 'fadeUp 0.6s 0.1s ease both' }}>
-        <h2 className="serif" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 300, lineHeight: 1.2, marginBottom: 14, color: '#2c2c2c' }}>
+        <h2 className="serif" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 300, lineHeight: 1.2, marginBottom: 14, color: 'var(--charcoal, #2c2c2c)' }}>
           Collect every photo from your event.
         </h2>
-        <p style={{ fontSize: '1rem', color: '#7a7065', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '1rem', color: 'var(--muted, #7a7065)', lineHeight: 1.5 }}>
           One gallery, every guest, zero group-chat chaos.
         </p>
       </div>
@@ -36,7 +37,7 @@ const Home = ({ onNavigate }) => {
         <button
           onClick={() => onNavigate('create')}
           style={{
-            background: '#FF5A1F',
+            background: 'var(--gold, #FF5A1F)',
             color: 'white',
             border: 'none',
             padding: '14px 28px',
@@ -55,8 +56,8 @@ const Home = ({ onNavigate }) => {
           onClick={() => onNavigate('join')}
           style={{
             background: 'transparent',
-            color: '#2c2c2c',
-            border: '1px solid rgba(44,44,44,0.25)',
+            color: 'var(--charcoal, #2c2c2c)',
+            border: '1px solid var(--border, rgba(44,44,44,0.25))',
             padding: '14px 28px',
             borderRadius: 3,
             fontFamily: 'Jost, sans-serif',
@@ -85,7 +86,7 @@ const Home = ({ onNavigate }) => {
           }}
         >
           <div style={{ fontSize: '0.7rem', letterSpacing: '0.32em', color: '#c9a84c', marginBottom: 10, fontWeight: 500 }}>LUXE</div>
-          <div className="serif" style={{ fontSize: '1.8rem', fontWeight: 300, color: '#2c2c2c', marginBottom: 8 }}>Classic</div>
+          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.8rem', fontWeight: 300, color: '#2c2c2c', marginBottom: 8 }}>Classic</div>
           <p style={{ fontSize: '0.88rem', color: '#7a7065', lineHeight: 1.5, marginBottom: 16 }}>Editorial, golden-hour. Made for weddings and dinner parties.</p>
           <div style={{ display: 'flex', gap: 6 }}>
             <span style={{ width: 22, height: 22, borderRadius: 3, background: '#faf7f2', border: '1px solid #e8e0d0' }} />
@@ -107,7 +108,7 @@ const Home = ({ onNavigate }) => {
           }}
         >
           <div style={{ fontSize: '0.7rem', letterSpacing: '0.32em', color: '#FF5A1F', marginBottom: 10, fontWeight: 500 }}>LIVE</div>
-          <div className="serif" style={{ fontSize: '1.8rem', fontWeight: 300, color: '#FFF7EC', marginBottom: 8 }}>Film</div>
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '1.8rem', color: '#FFF7EC', marginBottom: 8, letterSpacing: '-0.01em' }}>Film</div>
           <p style={{ fontSize: '0.88rem', color: 'rgba(255,247,236,0.65)', lineHeight: 1.5, marginBottom: 16 }}>Grainy, off-the-cuff. Made for nights out and birthdays.</p>
           <div style={{ display: 'flex', gap: 6 }}>
             <span style={{ width: 22, height: 22, borderRadius: 3, background: '#FFF7EC' }} />
@@ -116,6 +117,7 @@ const Home = ({ onNavigate }) => {
           </div>
         </button>
       </div>
+    </div>
     </div>
   );
 };

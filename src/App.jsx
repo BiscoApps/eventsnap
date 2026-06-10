@@ -62,6 +62,40 @@ const FONT_STYLE = `
   }
   [data-theme="film"] .serif { font-family: 'Jost', sans-serif; }
 
+  [data-theme="neutral"] {
+    --n-bg: #E9E4DA;
+    --n-card: #F4F0E8;
+    --n-text: #2A2520;
+    --n-muted: #6E685C;
+    --n-accent: #C77B4E;
+    --n-accent-hover: #A85F35;
+    --n-border: #D6D0C4;
+    --bg: #E9E4DA;
+    --cream: #E9E4DA;
+    --card: #F4F0E8;
+    --charcoal: #2A2520;
+    --text: #2A2520;
+    --muted: #6E685C;
+    --gold: #C77B4E;
+    --gold-dark: #C77B4E;
+    --gold-light: #D89568;
+    --border: #D6D0C4;
+    --accent-tint-faint: rgba(199,123,78,0.05);
+    --accent-tint-soft: rgba(199,123,78,0.10);
+    --accent-tint-medium: rgba(199,123,78,0.15);
+    --accent-ring: rgba(199,123,78,0.18);
+  }
+  [data-theme="neutral"] .serif { font-family: 'Jost', sans-serif; }
+  [data-theme="neutral"] .nav { background: var(--n-bg); }
+  [data-theme="neutral"] .btn-gold {
+    background: var(--n-accent);
+    background-size: auto;
+  }
+  [data-theme="neutral"] .btn-gold:hover {
+    background: var(--n-accent-hover);
+    box-shadow: 0 6px 24px rgba(199,123,78,0.4);
+  }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
@@ -336,6 +370,7 @@ const JoinScreen = ({ onNavigate, toast }) => {
   };
 
   return (
+    <div data-theme="neutral">
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ width: '100%', maxWidth: 440, animation: 'fadeUp 0.5s ease' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -343,7 +378,7 @@ const JoinScreen = ({ onNavigate, toast }) => {
           <h2 className="serif" style={{ fontSize: '2.4rem', fontWeight: 300, marginBottom: 8 }}>Join Event</h2>
           <p style={{ color: 'var(--muted)', fontWeight: 300, fontSize: '0.9rem' }}>Enter the event code from your invitation or QR scan</p>
         </div>
-        <div style={{ background: 'white', borderRadius: 6, padding: 36, boxShadow: 'var(--shadow)' }}>
+        <div style={{ background: 'var(--card, white)', borderRadius: 6, padding: 36, boxShadow: 'var(--shadow)' }}>
           <input
             value={inputCode}
             onChange={(e) => setInputCode(e.target.value.toUpperCase())}
@@ -360,6 +395,7 @@ const JoinScreen = ({ onNavigate, toast }) => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
@@ -548,12 +584,14 @@ export default function App() {
   };
 
   const showNav = route.screen !== 'event' && route.screen !== 'host' && route.screen !== 'photographer' && route.screen !== 'slideshow' && route.screen !== 'reel' && route.screen !== 'proSignup' && route.screen !== 'proLogin' && route.screen !== 'proDashboard';
+  const isNeutralShell = ['home', 'create', 'join'].includes(route.screen);
 
   return (
     <>
       <style>{FONT_STYLE}</style>
 
       {showNav && (
+        <div data-theme={isNeutralShell ? 'neutral' : undefined}>
         <div className="nav">
           <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -574,6 +612,7 @@ export default function App() {
               )}
             </div>
           </div>
+        </div>
         </div>
       )}
 

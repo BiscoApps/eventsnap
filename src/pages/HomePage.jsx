@@ -167,12 +167,13 @@ const CreateEvent = ({ onNavigate, toast }) => {
         value={form[key]}
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         placeholder={placeholder}
-        style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '13px 16px', fontSize: '0.95rem', background: 'white', color: 'var(--charcoal)' }}
+        style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '13px 16px', fontSize: '0.95rem', background: 'var(--card, white)', color: 'var(--charcoal)' }}
       />
     </div>
   );
 
   return (
+    <div data-theme="neutral">
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
       <div style={{ width: '100%', maxWidth: 500, animation: 'fadeUp 0.5s ease' }}>
         <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.82rem', letterSpacing: '0.08em', marginBottom: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -181,7 +182,7 @@ const CreateEvent = ({ onNavigate, toast }) => {
         <h2 className="serif" style={{ fontSize: '2.8rem', fontWeight: 300, marginBottom: 8 }}>Create Event</h2>
         <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: 48, fontWeight: 300 }}>Your unique QR code will be generated instantly.</p>
 
-        <div style={{ background: 'white', borderRadius: 6, padding: '40px', boxShadow: 'var(--shadow)' }}>
+        <div style={{ background: 'var(--card, white)', borderRadius: 6, padding: '40px', boxShadow: 'var(--shadow)' }}>
           {field('title', 'Event Name *', 'text', "Sarah & James's Wedding")}
           {field('subtitle', 'Tagline or Venue', 'text', 'The Grand Ballroom, New York')}
           {field('date', 'Event Date *', 'date')}
@@ -198,7 +199,7 @@ const CreateEvent = ({ onNavigate, toast }) => {
                 onChange={(e) => handleSlugChange(e.target.value)}
                 placeholder="e.g. tomi-wedding"
                 maxLength={40}
-                style={{ flex: 1, border: '1px solid var(--border)', borderRadius: '0 3px 3px 0', padding: '13px 16px', fontSize: '0.95rem', background: 'white', color: 'var(--charcoal)' }}
+                style={{ flex: 1, border: '1px solid var(--border)', borderRadius: '0 3px 3px 0', padding: '13px 16px', fontSize: '0.95rem', background: 'var(--card, white)', color: 'var(--charcoal)' }}
               />
             </div>
             {slugError && <p style={{ color: '#e53e3e', fontSize: '0.78rem', marginTop: 4 }}>{slugError}</p>}
@@ -233,6 +234,7 @@ const CreateEvent = ({ onNavigate, toast }) => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };
