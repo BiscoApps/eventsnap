@@ -64,7 +64,7 @@ const UpgradePrompt = ({ eventCode, eventTitle, label, tier }) => {
   };
 
   return (
-    <div style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 6, padding: 20, textAlign: 'center' }}>
+    <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 6, padding: 20, textAlign: 'center' }}>
       <p style={{ fontSize: '0.88rem', color: 'var(--charcoal)', marginBottom: 12 }}>
         {label || 'This is a Premium feature.'}
       </p>
@@ -89,7 +89,7 @@ const StatusBadge = ({ event }) => {
 const PlanBadge = ({ plan }) => {
   const isPremium = plan === 'premium' || plan === 'premium_max';
   return (
-    <span className="badge" style={{ background: isPremium ? 'rgba(201,168,76,0.12)' : 'rgba(160,160,160,0.1)', color: isPremium ? 'var(--gold-dark)' : '#666' }}>
+    <span className="badge" style={{ background: isPremium ? 'var(--accent-tint-medium, rgba(201,168,76,0.12))' : 'rgba(160,160,160,0.1)', color: isPremium ? 'var(--gold-dark)' : '#666' }}>
       {plan === 'premium_max' ? 'Premium Max' : isPremium ? 'Premium' : 'Free'}
     </span>
   );
@@ -492,7 +492,8 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   const milestone = isPremium ? getMilestoneNudge() : null;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div data-theme={event?.theme || 'classic'}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg, var(--cream))' }}>
       {upgradeModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={() => setUpgradeModal(null)}>
           <div onClick={(e) => e.stopPropagation()} style={{ background: 'white', borderRadius: 10, padding: '40px 36px', maxWidth: 420, width: '100%', textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,0.18)', animation: 'scaleIn 0.2s ease' }}>
@@ -529,17 +530,17 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
       )}
 
       {/* Header */}
-      <div style={{ background: 'var(--charcoal)', padding: '48px 32px 40px', color: 'white' }}>
+      <div style={{ background: 'var(--header-bg, var(--charcoal))', padding: '48px 32px 40px', color: 'var(--text, white)' }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', letterSpacing: '0.08em' }}>← All Events</button>
+            <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-soft, rgba(255,255,255,0.4))', fontSize: '0.8rem', letterSpacing: '0.08em' }}>← All Events</button>
             <button onClick={async () => { await signOut(); onNavigate('home'); }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 3, cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', letterSpacing: '0.08em', padding: '5px 12px', fontFamily: "'Jost', sans-serif", transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>Sign Out</button>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <span className="badge" style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold-light)', marginBottom: 12 }}>✦ Host Dashboard</span>
+              <span className="badge" style={{ background: 'var(--accent-tint-medium, rgba(201,168,76,0.15))', color: 'var(--gold-light)', marginBottom: 12 }}>✦ Host Dashboard</span>
               <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', fontWeight: 300, lineHeight: 1.2 }}>{event.title}</h1>
-              {event.subtitle && <p style={{ color: 'rgba(255,255,255,0.45)', marginTop: 6, fontWeight: 300 }}>{event.subtitle}</p>}
+              {event.subtitle && <p style={{ color: 'var(--text-soft, rgba(255,255,255,0.45))', marginTop: 6, fontWeight: 300 }}>{event.subtitle}</p>}
             </div>
           </div>
         </div>
@@ -549,7 +550,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
 
         {/* Upgrade button for free events */}
         {!isPremium && (
-          <div style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))', border: '1px solid rgba(201,168,76,0.25)', borderRadius: 6, padding: '20px 28px', marginBottom: 24 }}>
+          <div style={{ background: 'linear-gradient(135deg, var(--accent-tint-soft, rgba(201,168,76,0.08)), var(--accent-tint-faint, rgba(201,168,76,0.02)))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.25))', borderRadius: 6, padding: '20px 28px', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <p style={{ fontSize: '0.92rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: 2 }}>Premium — £29</p>
@@ -557,14 +558,14 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               </div>
               <UpgradePrompt eventCode={event.id} eventTitle={event.title} label="Upgrade to Premium — £29" tier="premium" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(201,168,76,0.15)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.15))' }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <p style={{ fontSize: '0.92rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: 2 }}>Premium Max — £59</p>
                 <p style={{ fontSize: '0.82rem', color: 'var(--muted)', fontWeight: 300 }}>5000 photos/videos, all Premium features, priority support</p>
               </div>
               <UpgradePrompt eventCode={event.id} eventTitle={event.title} label="Upgrade to Premium Max — £59" tier="premium_max" />
             </div>
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(201,168,76,0.15)', textAlign: 'center' }}>
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.15))', textAlign: 'center' }}>
               <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
                 Photographer? Get unlimited events with Pro — £19/month{' '}
                 <button onClick={() => onNavigate('proSignup')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gold-dark)', fontWeight: 500, fontFamily: 'Jost, sans-serif', fontSize: '0.8rem' }}>
@@ -700,7 +701,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       padding: '14px 12px',
                       borderRadius: 6,
                       border: posterDesign === d.key ? '2px solid #c9a84c' : '1px solid var(--border)',
-                      background: posterDesign === d.key ? 'rgba(201,168,76,0.06)' : 'var(--cream)',
+                      background: posterDesign === d.key ? 'var(--accent-tint-soft, rgba(201,168,76,0.06))' : 'var(--cream)',
                       cursor: 'pointer',
                       textAlign: 'center',
                       transition: 'border 0.15s, background 0.15s',
@@ -733,7 +734,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     style={{
                       flex: '1 1 120px', padding: '14px 12px', borderRadius: 6,
                       border: posterDesign === d.key ? '2px solid #c9a84c' : '1px solid var(--border)',
-                      background: posterDesign === d.key ? 'rgba(201,168,76,0.06)' : 'var(--cream)',
+                      background: posterDesign === d.key ? 'var(--accent-tint-soft, rgba(201,168,76,0.06))' : 'var(--cream)',
                       cursor: 'pointer', textAlign: 'center', transition: 'border 0.15s, background 0.15s',
                     }}
                   >
@@ -891,7 +892,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                         cursor: locked ? 'not-allowed' : 'pointer',
                         opacity: locked ? 0.55 : 1,
                         border: selected ? '1px solid var(--gold)' : '1px solid var(--border)',
-                        background: selected ? 'rgba(201,168,76,0.1)' : 'white',
+                        background: selected ? 'var(--accent-tint-soft, rgba(201,168,76,0.1))' : 'white',
                         color: selected ? 'var(--gold-dark)' : 'var(--charcoal)',
                         textTransform: 'capitalize',
                         display: 'inline-flex',
@@ -951,7 +952,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                           ? '1px solid var(--gold)'
                           : '1px solid var(--border)',
                         background: event.slideshow_transition === t || (!event.slideshow_transition && t === 'fade')
-                          ? 'rgba(201,168,76,0.1)'
+                          ? 'var(--accent-tint-soft, rgba(201,168,76,0.1))'
                           : 'white',
                         color: event.slideshow_transition === t || (!event.slideshow_transition && t === 'fade')
                           ? 'var(--gold-dark)'
@@ -999,7 +1000,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       setPendingSlideshowIds(null);
                       toast.show('Slideshow selection saved');
                     }}
-                    style={{ padding: '6px 14px', borderRadius: 3, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--gold)', background: 'rgba(201,168,76,0.1)', color: 'var(--gold-dark)', fontWeight: 500 }}
+                    style={{ padding: '6px 14px', borderRadius: 3, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--gold)', background: 'var(--accent-tint-soft, rgba(201,168,76,0.1))', color: 'var(--gold-dark)', fontWeight: 500 }}
                   >
                     Save Selection
                   </button>
@@ -1062,7 +1063,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
             <>
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {['Fade', 'Slide', 'Zoom'].map((t) => (
-                  <div key={t} style={{ padding: '8px 18px', borderRadius: 3, fontSize: '0.78rem', border: t === 'Fade' ? '1px solid var(--gold)' : '1px solid var(--border)', background: t === 'Fade' ? 'rgba(201,168,76,0.1)' : 'white', color: t === 'Fade' ? 'var(--gold-dark)' : 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}>{t}</div>
+                  <div key={t} style={{ padding: '8px 18px', borderRadius: 3, fontSize: '0.78rem', border: t === 'Fade' ? '1px solid var(--gold)' : '1px solid var(--border)', background: t === 'Fade' ? 'var(--accent-tint-soft, rgba(201,168,76,0.1))' : 'white', color: t === 'Fade' ? 'var(--gold-dark)' : 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}>{t}</div>
                 ))}
               </div>
               <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginBottom: 16, fontWeight: 300 }}>
@@ -1241,7 +1242,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 <div style={{ marginTop: 16, padding: 20, background: 'var(--cream)', borderRadius: 6 }}>
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 500, marginBottom: 12, color: 'var(--charcoal)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     New Reel
-                    <span style={{ fontSize: '0.68rem', background: 'rgba(201,168,76,0.15)', color: 'var(--gold-dark)', padding: '2px 8px', borderRadius: 100, fontWeight: 500 }}>Premium</span>
+                    <span style={{ fontSize: '0.68rem', background: 'var(--accent-tint-medium, rgba(201,168,76,0.15))', color: 'var(--gold-dark)', padding: '2px 8px', borderRadius: 100, fontWeight: 500 }}>Premium</span>
                   </h4>
                   <input
                     type="text"
@@ -1312,7 +1313,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 </span>
               </div>
               {event.face_tagging_enabled && (
-                <div style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: 4, padding: '12px 16px', fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.15))', borderRadius: 4, padding: '12px 16px', fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.7 }}>
                   Enabling face tagging means guests can find photos of themselves. All guests must opt in — their consent is recorded.
                 </div>
               )}
@@ -1355,7 +1356,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   }
                   setReindexLoading(false);
                 }}
-                style={{ marginTop: 16, background: 'none', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold-dark)', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+                style={{ marginTop: 16, background: 'none', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.4))', color: 'var(--gold-dark)', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
               >
                 {reindexLoading ? reindexMsg || 'Indexing...' : 'Re-index All Photos'}
               </button>
@@ -1419,7 +1420,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
             <>
               {/* Milestone nudge */}
               {milestone && (
-                <div style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 6, padding: '14px 18px', marginBottom: 16 }}>
+                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 6, padding: '14px 18px', marginBottom: 16 }}>
                   <p style={{ fontSize: '0.88rem', color: 'var(--charcoal)', marginBottom: 10, fontWeight: 500 }}>
                     {milestone.msg}
                   </p>
@@ -1581,6 +1582,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
       </div>
 
       <Lightbox item={lightbox} eventName={event.title} onClose={() => setLightbox(null)} />
+    </div>
     </div>
   );
 };
