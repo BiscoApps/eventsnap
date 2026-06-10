@@ -126,6 +126,8 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   const [reindexLoading, setReindexLoading] = useState(false);
   const [reindexMsg, setReindexMsg] = useState('');
   const [faceDeleteMsg, setFaceDeleteMsg] = useState('');
+  const [deleteEventLoading, setDeleteEventLoading] = useState(false);
+  const [deleteEventMsg, setDeleteEventMsg] = useState('');
   const [posterDesign, setPosterDesign] = useState('design1');
   const [upgradeModal, setUpgradeModal] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
@@ -1530,6 +1532,51 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* ─── Danger Zone ─────────────────────────────────────────── */}
+        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 40 }}>
+          <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 12 }}>Danger Zone</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, lineHeight: 1.6 }}>
+            Permanently delete this event, all photos and videos, face data, and settings. This cannot be undone.
+          </p>
+          <button
+            disabled={deleteEventLoading}
+            onClick={async () => {
+              if (deleteEventLoading) return;
+              const typed = window.prompt(`This will permanently delete "${event.title}" and ALL its data. Type the event code (${eventCode}) to confirm:`);
+              if (typed === null || typed !== eventCode) {
+                setDeleteEventMsg('Code did not match — nothing deleted.');
+                return;
+              }
+              setDeleteEventLoading(true);
+              setDeleteEventMsg('');
+              try {
+                const res = await fetch(`${API_BASE}/.netlify/functions/delete-event`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ eventCode, confirmEventCode: typed, accessToken: (await supabase.auth.getSession()).data.session?.access_token }),
+                });
+                const result = await res.json();
+                if (res.ok && result.deleted) {
+                  toast.show('Event permanently deleted.');
+                  onNavigate('home');
+                } else {
+                  setDeleteEventMsg(result.error || 'Something went wrong.');
+                  setDeleteEventLoading(false);
+                }
+              } catch {
+                setDeleteEventMsg('Something went wrong. Please try again.');
+                setDeleteEventLoading(false);
+              }
+            }}
+            style={{ background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+          >
+            {deleteEventLoading ? 'Deleting...' : 'Delete Event Permanently'}
+          </button>
+          {deleteEventMsg && (
+            <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 10 }}>{deleteEventMsg}</p>
+          )}
         </div>
       </div>
 
