@@ -6,7 +6,8 @@ const supabase = createClient(
 );
 const { sanitiseText } = require('./_sanitise');
 
-const ALLOWED_FIELDS = ['moderation_enabled', 'face_tagging_enabled', 'slideshow_transition', 'brand_color', 'slideshow_photo_ids', 'status', 'cover_photo_url'];
+const ALLOWED_FIELDS = ['moderation_enabled', 'face_tagging_enabled', 'slideshow_transition', 'brand_color', 'slideshow_photo_ids', 'status', 'cover_photo_url', 'theme'];
+const ALLOWED_THEMES = ['classic', 'film'];
 
 const rateLimit = new Map();
 const RATE_LIMIT_MAX = 30;
@@ -49,7 +50,9 @@ exports.handler = async (event) => {
     const STRING_FIELDS = ['brand_color', 'slideshow_transition', 'cover_photo_url'];
     const sanitisedValue = STRING_FIELDS.includes(field) && typeof value === 'string'
       ? sanitiseText(value)
-      : value;
+      : field === 'theme'
+        ? (ALLOWED_THEMES.includes(value) ? value : 'classic')
+        : value;
 
     // Verify caller is the host
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);

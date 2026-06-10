@@ -874,7 +874,11 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       onClick={async () => {
                         if (locked) return;
                         const next = validateTheme(th);
-                        await updateEvent(eventCode, { theme: next });
+                        await fetch(`${API_BASE}/.netlify/functions/update-event-setting`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ eventCode, field: 'theme', value: next, accessToken: (await supabase.auth.getSession()).data.session?.access_token }),
+                        });
                         await loadEvent();
                       }}
                       style={{
