@@ -1,4 +1,11 @@
+const AWS = require('aws-sdk');
 const { createClient } = require('@supabase/supabase-js');
+
+const rekognition = new AWS.Rekognition({
+  region: process.env.REKOGNITION_REGION || 'eu-west-1',
+  accessKeyId: process.env.REKOGNITION_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REKOGNITION_SECRET_ACCESS_KEY,
+});
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -57,6 +64,19 @@ exports.handler = async (event) => {
 
     if (eventData.host_email && eventData.host_email.toLowerCase() !== user.email.toLowerCase()) {
       return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+    }
+
+    // Delete AWS Rekognition collection holding indexed face vectors (biometric data first; abort if AWS fails)
+    const collectionId = `eventsnap-${eventCode}`.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+    try {
+      await rekognition.deleteCollection({ CollectionId: collectionId }).promise();
+    } catch (err) {
+      if (err.code === 'ResourceNotFoundException') {
+        // no collection for this event — fine, continue (idempotent)
+      } else {
+        console.error('deleteCollection error:', err);
+        return { statusCode: 500, body: JSON.stringify({ error: 'Failed to delete face data' }) };
+      }
     }
 
     // Delete all consent rows for this event
