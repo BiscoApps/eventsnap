@@ -33,10 +33,19 @@ exports.handler = async (event) => {
   if (rateLimited) return rateLimited;
 
   try {
-    const { email, eventId } = JSON.parse(event.body);
+    const { email, eventId, accessToken } = JSON.parse(event.body);
 
-    if (!email || !eventId) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'email and eventId are required' }) };
+    if (!email || !eventId || !accessToken) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'email, eventId, and accessToken are required' }) };
+    }
+
+    // Verify the JWT and confirm the email matches (mirrors create-event.js)
+    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
+    if (authError || !user) {
+      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+    }
+    if (user.email.toLowerCase() !== email.toLowerCase()) {
+      return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 
     const sanitisedEmail = email.trim().toLowerCase();

@@ -90,7 +90,7 @@ exports.handler = async (event) => {
       fetch(`${process.env.URL}/.netlify/functions/check-ambassador`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: hostEmail, eventId: data.id }),
+        body: JSON.stringify({ email: hostEmail, eventId: data.id, accessToken }),
       }).catch(() => {});
     }
 
