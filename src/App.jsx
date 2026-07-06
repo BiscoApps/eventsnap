@@ -18,28 +18,30 @@ import Lightbox from './components/Lightbox.jsx';
 import Home from './pages/Home.jsx';
 
 const FONT_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime:wght@400;700&display=swap');
   /* TODO(iOS Capacitor): Space Grotesk must be bundled offline for the native build; the @import below is a web-only fallback. */
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream: #faf7f2;
-    --warm-white: #fff9f2;
-    --gold: #c9a84c;
-    --gold-light: #e8d08a;
-    --gold-dark: #8b6914;
-    --charcoal: #2c2c2c;
-    --muted: #7a7065;
-    --border: #e8e0d0;
-    --card: #ffffff;
-    --shadow: 0 4px 40px rgba(0,0,0,0.08);
-    --shadow-hover: 0 8px 60px rgba(0,0,0,0.14);
+    --cream: #FDFAF2;
+    --warm-white: #FDFAF2;
+    --gold: #B8860B;
+    --gold-light: #F0D060;
+    --gold-dark: #8A6000;
+    --charcoal: #3A2800;
+    --muted: #8A6800;
+    --border: #E8D080;
+    --card: #F8F0D8;
+    --header-bg: #3A2800;
+    --shadow: 3px 3px 0 #8A6000;
+    --shadow-hover: 1px 1px 0 #5A4000;
   }
 
-  body { background: var(--cream); font-family: 'Jost', sans-serif; color: var(--charcoal); }
+  body { background: var(--cream); font-family: 'Courier Prime', monospace; color: var(--charcoal); }
 
-  .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .serif { font-family: 'Press Start 2P', monospace; }
 
   [data-theme="film"] {
     --bg: #14110E;
@@ -63,29 +65,29 @@ const FONT_STYLE = `
   [data-theme="film"] .serif { font-family: 'Jost', sans-serif; }
 
   [data-theme="neutral"] {
-    --n-bg: #E9E4DA;
-    --n-card: #F4F0E8;
-    --n-text: #2A2520;
-    --n-muted: #6E685C;
-    --n-accent: #C77B4E;
-    --n-accent-hover: #A85F35;
-    --n-border: #D6D0C4;
-    --bg: #E9E4DA;
-    --cream: #E9E4DA;
-    --card: #F4F0E8;
-    --charcoal: #2A2520;
-    --text: #2A2520;
-    --muted: #6E685C;
-    --gold: #C77B4E;
-    --gold-dark: #C77B4E;
-    --gold-light: #D89568;
-    --border: #D6D0C4;
-    --accent-tint-faint: rgba(199,123,78,0.05);
-    --accent-tint-soft: rgba(199,123,78,0.10);
-    --accent-tint-medium: rgba(199,123,78,0.15);
-    --accent-ring: rgba(199,123,78,0.18);
+    --n-bg: #FDFAF2;
+    --n-card: #F8F0D8;
+    --n-text: #3A2800;
+    --n-muted: #8A6800;
+    --n-accent: #B8860B;
+    --n-accent-hover: #8A6000;
+    --n-border: #E8D080;
+    --bg: #FDFAF2;
+    --cream: #FDFAF2;
+    --card: #F8F0D8;
+    --charcoal: #3A2800;
+    --text: #3A2800;
+    --muted: #8A6800;
+    --gold: #B8860B;
+    --gold-dark: #8A6000;
+    --gold-light: #F0D060;
+    --border: #E8D080;
+    --accent-tint-faint: rgba(184,134,11,0.05);
+    --accent-tint-soft: rgba(184,134,11,0.10);
+    --accent-tint-medium: rgba(184,134,11,0.15);
+    --accent-ring: rgba(184,134,11,0.18);
   }
-  [data-theme="neutral"] .serif { font-family: 'Jost', sans-serif; }
+  [data-theme="neutral"] .serif { font-family: 'Press Start 2P', monospace; }
   [data-theme="neutral"] .nav { background: var(--n-bg); }
   [data-theme="neutral"] .btn-gold {
     background: var(--n-accent);
@@ -93,7 +95,7 @@ const FONT_STYLE = `
   }
   [data-theme="neutral"] .btn-gold:hover {
     background: var(--n-accent-hover);
-    box-shadow: 0 6px 24px rgba(199,123,78,0.4);
+    box-shadow: 1px 1px 0 #5A4000;
   }
 
   @keyframes fadeUp {
@@ -118,43 +120,48 @@ const FONT_STYLE = `
   .fade-up-4 { animation: fadeUp 0.6s 0.3s ease both; }
 
   .btn-gold {
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light), var(--gold));
-    background-size: 300% 100%;
-    color: white;
-    border: none;
+    background: #B8860B;
+    color: #FDFAF2;
+    border: 2px solid #8A6000;
+    border-radius: 0;
+    box-shadow: 3px 3px 0 #5A4000;
     cursor: pointer;
-    font-family: 'Jost', sans-serif;
-    font-weight: 500;
-    letter-spacing: 0.12em;
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 400;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    font-size: 0.72rem;
-    transition: all 0.3s ease;
+    font-size: 0.6rem;
+    padding: 12px 20px;
+    transition: all 0.1s ease;
   }
   .btn-gold:hover {
-    background-position: right center;
-    box-shadow: 0 6px 24px rgba(201,168,76,0.4);
-    transform: translateY(-1px);
+    box-shadow: 1px 1px 0 #5A4000;
+    transform: translate(2px, 2px);
   }
 
   .btn-outline {
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold-dark);
+    background: #FDFAF2;
+    border: 2px solid #3A2800;
+    border-radius: 0;
+    box-shadow: 3px 3px 0 #8A6800;
+    color: #3A2800;
     cursor: pointer;
-    font-family: 'Jost', sans-serif;
-    font-weight: 500;
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-size: 0.72rem;
-    transition: all 0.3s ease;
+    font-size: 0.6rem;
+    transition: all 0.1s ease;
   }
   .btn-outline:hover {
     background: var(--gold);
-    color: white;
+    color: #FDFAF2;
+    box-shadow: 1px 1px 0 #8A6800;
+    transform: translate(2px, 2px);
   }
 
   input, textarea, select {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Courier Prime', monospace;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
@@ -167,16 +174,18 @@ const FONT_STYLE = `
     display: flex;
     align-items: center;
     gap: 16px;
-    color: var(--muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
+    color: #8A6000;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
   }
   .divider::before, .divider::after {
     content: '';
     flex: 1;
-    height: 1px;
-    background: var(--border);
+    height: 0;
+    border-top: 2px dashed #E8D080;
+    background: none;
   }
 
   .photo-grid {
@@ -187,7 +196,7 @@ const FONT_STYLE = `
 
   .photo-card {
     aspect-ratio: 1;
-    border-radius: 4px;
+    border-radius: 0;
     overflow: hidden;
     position: relative;
     cursor: pointer;
@@ -208,7 +217,7 @@ const FONT_STYLE = `
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    background: rgba(0,0,0,0.5);
     padding: 12px 10px 8px;
     opacity: 0;
     transition: opacity 0.2s ease;
@@ -221,7 +230,7 @@ const FONT_STYLE = `
 
   .drop-zone {
     border: 2px dashed var(--gold-light);
-    border-radius: 8px;
+    border-radius: 0;
     transition: all 0.2s ease;
     background: var(--accent-tint-faint, rgba(201,168,76,0.03));
   }
@@ -236,10 +245,12 @@ const FONT_STYLE = `
     align-items: center;
     gap: 6px;
     padding: 4px 12px;
-    border-radius: 100px;
-    font-size: 0.72rem;
+    border-radius: 0;
+    border: 1px solid #B8860B;
+    font-size: 0.5rem;
     letter-spacing: 0.08em;
-    font-weight: 500;
+    font-weight: 400;
+    font-family: 'Press Start 2P', monospace;
   }
   .badge-gold { background: var(--accent-tint-medium, rgba(201,168,76,0.12)); color: var(--gold-dark); }
   .badge-green { background: rgba(72,187,120,0.12); color: #276749; }
@@ -252,7 +263,7 @@ const FONT_STYLE = `
     background: var(--charcoal);
     color: white;
     padding: 14px 28px;
-    border-radius: 100px;
+    border-radius: 0;
     font-size: 0.82rem;
     letter-spacing: 0.04em;
     transition: transform 0.3s ease;
@@ -289,7 +300,7 @@ const FONT_STYLE = `
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(250,247,242,0.92);
+    background: rgba(253,250,242,0.92);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
@@ -297,8 +308,8 @@ const FONT_STYLE = `
   .loader {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(201,168,76,0.3);
-    border-top-color: var(--gold);
+    border: 2px solid #E8D080;
+    border-top-color: #B8860B;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -385,7 +396,7 @@ const JoinScreen = ({ onNavigate, toast }) => {
             onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
             placeholder="EVENT CODE"
             maxLength={8}
-            style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '16px', fontSize: '1.6rem', textAlign: 'center', letterSpacing: '0.25em', fontFamily: 'Cormorant Garamond, serif', marginBottom: 20, background: 'var(--cream)' }}
+            style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '16px', fontSize: '1.6rem', textAlign: 'center', letterSpacing: '0.25em', fontFamily: "'Courier Prime', monospace", marginBottom: 20, background: 'var(--cream)' }}
           />
           <button className="btn-gold" onClick={handleJoin} style={{ width: '100%', padding: '14px', borderRadius: 3 }}>
             Enter Gallery
@@ -478,7 +489,7 @@ const Dashboard = ({ eventId, onNavigate, toast }) => {
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginBottom: 6 }}>EVENT CODE</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, background: 'var(--cream)', borderRadius: 4, padding: '12px 20px', marginBottom: 20 }}>
-                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', letterSpacing: '0.25em', fontWeight: 400 }}>{event.id}</span>
+                <span style={{ fontFamily: "'Courier Prime', monospace", fontSize: '2rem', letterSpacing: '0.25em', fontWeight: 400 }}>{event.id}</span>
                 <button onClick={handleCopyCode} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '0.08em' }}>COPY</button>
               </div>
               {event.event_slug && (
@@ -510,7 +521,7 @@ const Dashboard = ({ eventId, onNavigate, toast }) => {
                 ))}
               </div>
 
-              <div style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.06), rgba(201,168,76,0.02))', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 6, padding: 24 }}>
+              <div style={{ background: 'var(--accent-tint-soft, rgba(184,134,11,0.10))', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 6, padding: 24 }}>
                 <p style={{ fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.7 }}>
                   💡 <strong>Pro tip:</strong> Create a printed table card with the QR code and a short note like <em>"Scan to share your photos!"</em> — guests love participating.
                 </p>

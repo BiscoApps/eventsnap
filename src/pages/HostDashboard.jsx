@@ -32,11 +32,11 @@ const ReelPhotoGrid = React.memo(({ photos, reelPhotoIds, onToggle }) => (
         <div
           key={p.id}
           onClick={() => onToggle(p.id, selected)}
-          style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: 4, overflow: 'hidden', cursor: 'pointer', border: selected ? '2px solid var(--gold)' : '2px solid transparent' }}
+          style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: 0, overflow: 'hidden', cursor: 'pointer', border: selected ? '2px solid var(--gold)' : '2px solid transparent' }}
         >
           <img src={p.image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
           {selected && (
-            <div style={{ position: 'absolute', top: 3, right: 3, width: 18, height: 18, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'white' }}>✓</div>
+            <div style={{ position: 'absolute', top: 3, right: 3, width: 18, height: 18, borderRadius: 0, background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'white' }}>✓</div>
           )}
         </div>
       );
@@ -64,11 +64,11 @@ const UpgradePrompt = ({ eventCode, eventTitle, label, tier }) => {
   };
 
   return (
-    <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 6, padding: 20, textAlign: 'center' }}>
+    <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 0, padding: 20, textAlign: 'center' }}>
       <p style={{ fontSize: '0.88rem', color: 'var(--charcoal)', marginBottom: 12 }}>
         {label || 'This is a Premium feature.'}
       </p>
-      <button className="btn-gold" onClick={handleUpgrade} disabled={loading} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.75rem' }}>
+      <button className="btn-gold" onClick={handleUpgrade} disabled={loading} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.75rem' }}>
         {loading ? 'Preparing checkout...' : (tier === 'premium_max' ? 'Upgrade to Premium Max — £59' : 'Upgrade to Premium')}
       </button>
     </div>
@@ -225,7 +225,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: 24, fontWeight: 300 }}>
             You are not the host of this event.
           </p>
-          <button className="btn-outline" onClick={() => onNavigate('home')} style={{ padding: '10px 24px', borderRadius: 3 }}>
+          <button className="btn-outline" onClick={() => onNavigate('home')} style={{ padding: '10px 24px', borderRadius: 0 }}>
             ← Back to home
           </button>
         </div>
@@ -496,7 +496,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
     <div style={{ minHeight: '100vh', background: 'var(--bg, var(--cream))' }}>
       {upgradeModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={() => setUpgradeModal(null)}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: 'white', borderRadius: 10, padding: '40px 36px', maxWidth: 420, width: '100%', textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,0.18)', animation: 'scaleIn 0.2s ease' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: '#FDFAF2', borderRadius: 0, padding: '40px 36px', maxWidth: 420, width: '100%', textAlign: 'center', boxShadow: '5px 5px 0 #3A2800', animation: 'scaleIn 0.2s ease' }}>
             <div style={{ fontSize: '2.8rem', marginBottom: 16 }}>{upgradeModal.emoji}</div>
             <h3 className="serif" style={{ fontSize: '1.5rem', fontWeight: 300, marginBottom: 10, color: 'var(--charcoal)', lineHeight: 1.3 }}>{upgradeModal.title}</h3>
             <p style={{ fontSize: '0.86rem', color: 'var(--muted)', marginBottom: 28, lineHeight: 1.7, fontWeight: 300 }}>{upgradeModal.subtitle}</p>
@@ -512,7 +512,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 const { url } = await response.json();
                 window.location.href = url;
               }}
-              style={{ width: '100%', padding: '14px', borderRadius: 3, marginBottom: 12, fontSize: '0.8rem' }}
+              style={{ width: '100%', padding: '14px', borderRadius: 0, marginBottom: 12, fontSize: '0.8rem' }}
             >
               Unlock with Premium — £29
             </button>
@@ -524,7 +524,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
       )}
       {/* Upgrade success banner */}
       {upgradeBanner && (
-        <div style={{ background: 'linear-gradient(135deg, var(--gold-dark), var(--gold))', color: 'white', padding: '14px 24px', textAlign: 'center', fontSize: '0.92rem', fontWeight: 500 }}>
+        <div style={{ background: 'var(--gold)', color: 'white', padding: '14px 24px', textAlign: 'center', fontSize: '0.92rem', fontWeight: 500 }}>
           🎉 Your event is now Premium!
         </div>
       )}
@@ -534,7 +534,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-soft, rgba(255,255,255,0.4))', fontSize: '0.8rem', letterSpacing: '0.08em' }}>← All Events</button>
-            <button onClick={async () => { await signOut(); onNavigate('home'); }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 3, cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', letterSpacing: '0.08em', padding: '5px 12px', fontFamily: "'Jost', sans-serif", transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>Sign Out</button>
+            <button onClick={async () => { await signOut(); onNavigate('home'); }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 0, cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', letterSpacing: '0.08em', padding: '5px 12px', fontFamily: "'Jost', sans-serif", transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>Sign Out</button>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 20 }}>
             <div>
@@ -550,7 +550,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
 
         {/* Upgrade button for free events */}
         {!isPremium && (
-          <div style={{ background: 'linear-gradient(135deg, var(--accent-tint-soft, rgba(201,168,76,0.08)), var(--accent-tint-faint, rgba(201,168,76,0.02)))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.25))', borderRadius: 6, padding: '20px 28px', marginBottom: 24 }}>
+          <div style={{ background: 'var(--accent-tint-soft, rgba(184,134,11,0.10))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.25))', borderRadius: 0, padding: '20px 28px', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <p style={{ fontSize: '0.92rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: 2 }}>Premium — £29</p>
@@ -579,7 +579,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
 
           {/* ─── Panel 1: Event Overview ───────────────────────────── */}
-          <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)' }}>
+          <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
             <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Event Overview</h3>
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
               <StatusBadge event={event} />
@@ -596,44 +596,44 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
           </div>
 
           {/* ─── Panel 2: Quick Actions ────────────────────────────── */}
-          <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)' }}>
+          <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
             <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Quick Actions</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {isEnded ? (
-                <button disabled style={{ padding: '11px 16px', borderRadius: 3, border: '1px solid var(--border)', background: 'var(--cream)', color: 'var(--muted)', fontSize: '0.82rem', fontFamily: 'Jost, sans-serif', cursor: 'not-allowed' }}>
+                <button disabled style={{ padding: '11px 16px', borderRadius: 0, border: '1px solid var(--border)', background: 'var(--cream)', color: 'var(--muted)', fontSize: '0.82rem', fontFamily: 'Jost, sans-serif', cursor: 'not-allowed' }}>
                   Event Ended
                 </button>
               ) : (
-                <button onClick={handleEndEvent} style={{ padding: '11px 16px', borderRadius: 3, border: '1px solid rgba(229,62,62,0.3)', background: 'rgba(229,62,62,0.06)', color: '#c53030', fontSize: '0.82rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', fontWeight: 500 }}>
+                <button onClick={handleEndEvent} style={{ padding: '11px 16px', borderRadius: 0, border: '1px solid rgba(229,62,62,0.3)', background: 'rgba(229,62,62,0.06)', color: '#c53030', fontSize: '0.82rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', fontWeight: 500 }}>
                   End Event
                 </button>
               )}
-              <button className="btn-outline" onClick={handleCopyLink} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={handleCopyLink} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                 {copyLabel}
               </button>
-              <button className="btn-outline" onClick={handleViewGallery} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={handleViewGallery} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                 View Gallery
               </button>
 
               {/* ZIP Download — gated */}
               {isPremium ? (
-                <button className="btn-outline" onClick={handleDownloadZip} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-outline" onClick={handleDownloadZip} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                   Download All as ZIP
                 </button>
               ) : (
-                <button className="btn-outline" onClick={() => setUpgradeModal({ emoji: '📦', title: 'Download all your photos', subtitle: 'Get every photo and video in one ZIP file, ready to save or share.' })} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-outline" onClick={() => setUpgradeModal({ emoji: '📦', title: 'Download all your photos', subtitle: 'Get every photo and video in one ZIP file, ready to save or share.' })} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                   Download All as ZIP
                 </button>
               )}
 
-              <button className="btn-outline" onClick={handleOpenSlideshow} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={handleOpenSlideshow} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Open Slideshow
               </button>
             </div>
           </div>
 
           {/* ─── Panel 3: Moderation ───────────────────────────────── */}
-          <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)' }}>
+          <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
             <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Photo Moderation</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <button
@@ -645,7 +645,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 }}
               >
                 <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'white',
+                  width: 20, height: 20, borderRadius: 0, background: '#FDFAF2',
                   position: 'absolute', top: 3,
                   left: event.moderation_enabled ? 25 : 3,
                   transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
@@ -665,22 +665,22 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
           </div>
 
           {/* ─── Panel 4: Cover Photo ──────────────────────────────── */}
-          <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)' }}>
+          <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
             <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Cover Photo</h3>
             {event.cover_photo_url && (
-              <div style={{ marginBottom: 16, borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ marginBottom: 16, borderRadius: 0, overflow: 'hidden' }}>
                 <img src={event.cover_photo_url} alt="Cover" style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }} />
               </div>
             )}
             <input ref={coverRef} type="file" accept="image/*" onChange={handleCoverUpload} style={{ display: 'none' }} />
-            <button className="btn-outline" onClick={() => coverRef.current?.click()} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem', width: '100%' }}>
+            <button className="btn-outline" onClick={() => coverRef.current?.click()} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem', width: '100%' }}>
               {event.cover_photo_url ? 'Change Cover Photo' : 'Upload Cover Photo'}
             </button>
           </div>
         </div>
 
         {/* ─── QR Poster — Premium ───────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 16 }}>QR Poster</h3>
           {isPremium ? (
             <>
@@ -699,7 +699,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     style={{
                       flex: '1 1 120px',
                       padding: '14px 12px',
-                      borderRadius: 6,
+                      borderRadius: 0,
                       border: posterDesign === d.key ? '2px solid #c9a84c' : '1px solid var(--border)',
                       background: posterDesign === d.key ? 'var(--accent-tint-soft, rgba(201,168,76,0.06))' : 'var(--cream)',
                       cursor: 'pointer',
@@ -713,7 +713,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   </div>
                 ))}
               </div>
-              <button className="btn-gold" onClick={handlePrintPoster} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={handlePrintPoster} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Generate & Print Poster
               </button>
             </>
@@ -732,7 +732,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     key={d.key}
                     onClick={() => setPosterDesign(d.key)}
                     style={{
-                      flex: '1 1 120px', padding: '14px 12px', borderRadius: 6,
+                      flex: '1 1 120px', padding: '14px 12px', borderRadius: 0,
                       border: posterDesign === d.key ? '2px solid #c9a84c' : '1px solid var(--border)',
                       background: posterDesign === d.key ? 'var(--accent-tint-soft, rgba(201,168,76,0.06))' : 'var(--cream)',
                       cursor: 'pointer', textAlign: 'center', transition: 'border 0.15s, background 0.15s',
@@ -744,7 +744,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   </div>
                 ))}
               </div>
-              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🖨️', title: 'Print your event poster', subtitle: 'Generate a beautiful A4 QR poster to display at your venue — guests scan and upload instantly.' })} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🖨️', title: 'Print your event poster', subtitle: 'Generate a beautiful A4 QR poster to display at your venue — guests scan and upload instantly.' })} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Generate & Print Poster
               </button>
             </>
@@ -752,17 +752,17 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Photographer Access — Premium ─────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 16 }}>Photographer Access</h3>
           {isPremium ? (
             <>
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 12, fontWeight: 300 }}>
                 Share this link with your photographer for bulk uploads (up to 50 files at once, auto-approved)
               </p>
-              <div style={{ background: 'var(--cream)', borderRadius: 4, padding: '10px 14px', fontSize: '0.82rem', wordBreak: 'break-all', marginBottom: 12, color: 'var(--charcoal)' }}>
+              <div style={{ background: 'var(--cream)', borderRadius: 0, padding: '10px 14px', fontSize: '0.82rem', wordBreak: 'break-all', marginBottom: 12, color: 'var(--charcoal)' }}>
                 {proUploadUrl}
               </div>
-              <button className="btn-outline" onClick={() => { navigator.clipboard?.writeText(proUploadUrl); toast.show('Photographer link copied!'); }} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={() => { navigator.clipboard?.writeText(proUploadUrl); toast.show('Photographer link copied!'); }} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Copy Photographer Link
               </button>
             </>
@@ -771,10 +771,10 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 12, fontWeight: 300 }}>
                 Share this link with your photographer for bulk uploads (up to 50 files at once, auto-approved)
               </p>
-              <div style={{ background: 'var(--cream)', borderRadius: 4, padding: '10px 14px', fontSize: '0.82rem', wordBreak: 'break-all', marginBottom: 12, color: 'var(--muted)', filter: 'blur(4px)', userSelect: 'none' }}>
+              <div style={{ background: 'var(--cream)', borderRadius: 0, padding: '10px 14px', fontSize: '0.82rem', wordBreak: 'break-all', marginBottom: 12, color: 'var(--muted)', filter: 'blur(4px)', userSelect: 'none' }}>
                 https://eventsnapapp.live/#/upload/••••••••/pro
               </div>
-              <button className="btn-outline" onClick={() => setUpgradeModal({ emoji: '📷', title: 'Give your photographer direct access', subtitle: 'Share a private upload link so your photographer can bulk upload up to 50 files at once, all auto-approved.' })} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={() => setUpgradeModal({ emoji: '📷', title: 'Give your photographer direct access', subtitle: 'Share a private upload link so your photographer can bulk upload up to 50 files at once, all auto-approved.' })} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Copy Photographer Link
               </button>
             </>
@@ -782,7 +782,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Analytics ─────────────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Analytics</h3>
 
           {/* Basic stats — always shown */}
@@ -845,7 +845,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   <div style={{ fontSize: '0.72rem', color: 'var(--muted)', letterSpacing: '0.1em' }}>TOP UPLOADERS</div>
                 </div>
               </div>
-              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '📊', title: 'Unlock your event analytics', subtitle: 'See uploads per day, top contributors, last upload time, and more.' })} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '📊', title: 'Unlock your event analytics', subtitle: 'See uploads per day, top contributors, last upload time, and more.' })} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}>
                 View Full Analytics
               </button>
             </>
@@ -853,7 +853,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Gallery Theme ─────────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 8 }}>Gallery Theme</h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 20 }}>Choose how the guest gallery looks.</p>
           {[
@@ -886,7 +886,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       }}
                       style={{
                         padding: '8px 18px',
-                        borderRadius: 3,
+                        borderRadius: 0,
                         fontSize: '0.78rem',
                         fontFamily: 'Jost, sans-serif',
                         cursor: locked ? 'not-allowed' : 'pointer',
@@ -913,7 +913,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Slideshow Settings — Premium ─────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 16 }}>Slideshow Settings</h3>
           {isPremium ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -927,7 +927,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       await updateEvent(eventCode, { brand_color: e.target.value });
                       await loadEvent();
                     }}
-                    style={{ width: 44, height: 36, border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', padding: 2 }}
+                    style={{ width: 44, height: 36, border: '1px solid var(--border)', borderRadius: 0, cursor: 'pointer', padding: 2 }}
                   />
                   <span style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>{event.brand_color || '#c9a84c'}</span>
                 </div>
@@ -944,7 +944,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       }}
                       style={{
                         padding: '8px 18px',
-                        borderRadius: 3,
+                        borderRadius: 0,
                         fontSize: '0.78rem',
                         fontFamily: 'Jost, sans-serif',
                         cursor: 'pointer',
@@ -978,13 +978,13 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                   <button
                     onClick={() => setPendingSlideshowIds(photos.map((p) => p.id))}
-                    style={{ padding: '6px 14px', borderRadius: 3, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--border)', background: 'white', color: 'var(--charcoal)' }}
+                    style={{ padding: '6px 14px', borderRadius: 0, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--border)', background: '#FDFAF2', color: 'var(--charcoal)' }}
                   >
                     Select All
                   </button>
                   <button
                     onClick={() => setPendingSlideshowIds([])}
-                    style={{ padding: '6px 14px', borderRadius: 3, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--border)', background: 'white', color: 'var(--charcoal)' }}
+                    style={{ padding: '6px 14px', borderRadius: 0, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--border)', background: '#FDFAF2', color: 'var(--charcoal)' }}
                   >
                     Clear All
                   </button>
@@ -1000,7 +1000,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       setPendingSlideshowIds(null);
                       toast.show('Slideshow selection saved');
                     }}
-                    style={{ padding: '6px 14px', borderRadius: 3, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--gold)', background: 'var(--accent-tint-soft, rgba(201,168,76,0.1))', color: 'var(--gold-dark)', fontWeight: 500 }}
+                    style={{ padding: '6px 14px', borderRadius: 0, fontSize: '0.72rem', fontFamily: 'Jost, sans-serif', cursor: 'pointer', border: '1px solid var(--gold)', background: 'var(--accent-tint-soft, rgba(201,168,76,0.1))', color: 'var(--gold-dark)', fontWeight: 500 }}
                   >
                     Save Selection
                   </button>
@@ -1020,7 +1020,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                           position: 'relative',
                           width: '100%',
                           paddingBottom: '100%',
-                          borderRadius: 4,
+                          borderRadius: 0,
                           overflow: 'hidden',
                           cursor: 'pointer',
                           border: selected ? '2px solid var(--gold)' : '2px solid transparent',
@@ -1038,7 +1038,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                             right: 4,
                             width: 20,
                             height: 20,
-                            borderRadius: '50%',
+                            borderRadius: 0,
                             background: 'var(--gold)',
                             display: 'flex',
                             alignItems: 'center',
@@ -1055,7 +1055,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 </div>
               </div>
 
-              <button className="btn-outline" onClick={handleOpenSlideshow} style={{ padding: '11px 16px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-outline" onClick={handleOpenSlideshow} style={{ padding: '11px 16px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Open Slideshow
               </button>
             </div>
@@ -1063,13 +1063,13 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
             <>
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {['Fade', 'Slide', 'Zoom'].map((t) => (
-                  <div key={t} style={{ padding: '8px 18px', borderRadius: 3, fontSize: '0.78rem', border: t === 'Fade' ? '1px solid var(--gold)' : '1px solid var(--border)', background: t === 'Fade' ? 'var(--accent-tint-soft, rgba(201,168,76,0.1))' : 'white', color: t === 'Fade' ? 'var(--gold-dark)' : 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}>{t}</div>
+                  <div key={t} style={{ padding: '8px 18px', borderRadius: 0, fontSize: '0.78rem', border: t === 'Fade' ? '1px solid var(--gold)' : '1px solid var(--border)', background: t === 'Fade' ? 'var(--accent-tint-soft, rgba(201,168,76,0.1))' : 'white', color: t === 'Fade' ? 'var(--gold-dark)' : 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}>{t}</div>
                 ))}
               </div>
               <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginBottom: 16, fontWeight: 300 }}>
                 Customise transitions, brand colour, and choose exactly which photos appear in your slideshow.
               </p>
-              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🎞️', title: 'Customise your slideshow', subtitle: 'Set your brand colour, choose a transition style, and hand-pick exactly which photos play.' })} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🎞️', title: 'Customise your slideshow', subtitle: 'Set your brand colour, choose a transition style, and hand-pick exactly which photos play.' })} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Unlock Slideshow Settings
               </button>
             </>
@@ -1077,7 +1077,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Reels — Premium ────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 16 }}>Reels</h3>
           {isPremium ? (
             <div>
@@ -1094,7 +1094,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                         <button
                           className="btn-outline"
                           onClick={() => window.open(`/#/reel/${event.id}/${r.id}`, '_blank')}
-                          style={{ padding: '6px 12px', borderRadius: 3, fontSize: '0.72rem' }}
+                          style={{ padding: '6px 12px', borderRadius: 0, fontSize: '0.72rem' }}
                         >
                           View
                         </button>
@@ -1106,7 +1106,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                             setReelPhotoIds(r.photo_ids || []);
                             setShowReelBuilder(true);
                           }}
-                          style={{ padding: '6px 12px', borderRadius: 3, fontSize: '0.72rem' }}
+                          style={{ padding: '6px 12px', borderRadius: 0, fontSize: '0.72rem' }}
                         >
                           Edit
                         </button>
@@ -1122,7 +1122,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                             await loadReels();
                             toast.show('Reel deleted');
                           }}
-                          style={{ padding: '6px 12px', borderRadius: 3, fontSize: '0.72rem', background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+                          style={{ padding: '6px 12px', borderRadius: 0, fontSize: '0.72rem', background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
                         >
                           Delete
                         </button>
@@ -1142,7 +1142,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     setReelPhotoIds([]);
                     setShowReelBuilder(true);
                   }}
-                  style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}
+                  style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}
                 >
                   + Create New Reel
                 </button>
@@ -1150,7 +1150,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
 
               {/* Reel builder */}
               {showReelBuilder && (
-                <div style={{ marginTop: 16, padding: 20, background: 'var(--cream)', borderRadius: 6 }}>
+                <div style={{ marginTop: 16, padding: 20, background: 'var(--cream)', borderRadius: 0 }}>
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 500, marginBottom: 12, color: 'var(--charcoal)' }}>
                     {activeReelId ? 'Edit Reel' : 'New Reel'}
                   </h4>
@@ -1159,13 +1159,13 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     value={reelTitle}
                     onChange={(e) => setReelTitle(e.target.value)}
                     placeholder="Reel title e.g. Best Moments"
-                    style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '10px 14px', fontSize: '0.88rem', marginBottom: 12, background: 'white', color: 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}
+                    style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 0, padding: '10px 14px', fontSize: '0.88rem', marginBottom: 12, background: '#FDFAF2', color: 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}
                   />
                   <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginBottom: 10 }}>
                     {reelPhotoIds.length > 0 ? `${reelPhotoIds.length} item${reelPhotoIds.length !== 1 ? 's' : ''} selected` : 'No items selected — tap to select'}
                   </p>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                    <button onClick={() => setReelPhotoIds([])} style={{ padding: '5px 12px', borderRadius: 3, fontSize: '0.72rem', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>Clear</button>
+                    <button onClick={() => setReelPhotoIds([])} style={{ padding: '5px 12px', borderRadius: 0, fontSize: '0.72rem', border: '1px solid var(--border)', background: '#FDFAF2', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>Clear</button>
                   </div>
                   <ReelPhotoGrid
                     photos={photos}
@@ -1207,14 +1207,14 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                         setReelPhotoIds([]);
                         toast.show(activeReelId ? 'Reel updated' : 'Reel created');
                       }}
-                      style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}
+                      style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}
                     >
                       {reelSaving ? 'Saving...' : activeReelId ? 'Save Changes' : 'Create Reel'}
                     </button>
                     <button
                       className="btn-outline"
                       onClick={() => { setShowReelBuilder(false); setActiveReelId(null); setReelTitle(''); setReelPhotoIds([]); }}
-                      style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}
+                      style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}
                     >
                       Cancel
                     </button>
@@ -1233,43 +1233,43 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     setReelPhotoIds([]);
                     setShowReelBuilder(true);
                   }}
-                  style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}
+                  style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}
                 >
                   + Create New Reel
                 </button>
               )}
               {showReelBuilder && (
-                <div style={{ marginTop: 16, padding: 20, background: 'var(--cream)', borderRadius: 6 }}>
+                <div style={{ marginTop: 16, padding: 20, background: 'var(--cream)', borderRadius: 0 }}>
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 500, marginBottom: 12, color: 'var(--charcoal)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     New Reel
-                    <span style={{ fontSize: '0.68rem', background: 'var(--accent-tint-medium, rgba(201,168,76,0.15))', color: 'var(--gold-dark)', padding: '2px 8px', borderRadius: 100, fontWeight: 500 }}>Premium</span>
+                    <span style={{ fontSize: '0.68rem', background: 'var(--accent-tint-medium, rgba(201,168,76,0.15))', color: 'var(--gold-dark)', padding: '2px 8px', borderRadius: 0, fontWeight: 500 }}>Premium</span>
                   </h4>
                   <input
                     type="text"
                     value={reelTitle}
                     onChange={(e) => setReelTitle(e.target.value)}
                     placeholder="Reel title e.g. Best Moments"
-                    style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 3, padding: '10px 14px', fontSize: '0.88rem', marginBottom: 12, background: 'white', color: 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}
+                    style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 0, padding: '10px 14px', fontSize: '0.88rem', marginBottom: 12, background: '#FDFAF2', color: 'var(--charcoal)', fontFamily: 'Jost, sans-serif' }}
                   />
                   <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginBottom: 10 }}>
                     {reelPhotoIds.length > 0 ? `${reelPhotoIds.length} item${reelPhotoIds.length !== 1 ? 's' : ''} selected` : 'No items selected — tap to select'}
                   </p>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                    <button onClick={() => setReelPhotoIds([])} style={{ padding: '5px 12px', borderRadius: 3, fontSize: '0.72rem', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>Clear</button>
+                    <button onClick={() => setReelPhotoIds([])} style={{ padding: '5px 12px', borderRadius: 0, fontSize: '0.72rem', border: '1px solid var(--border)', background: '#FDFAF2', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>Clear</button>
                   </div>
                   <ReelPhotoGrid photos={photos} reelPhotoIds={reelPhotoIds} onToggle={handleReelToggle} />
                   <div style={{ display: 'flex', gap: 10 }}>
                     <button
                       className="btn-gold"
                       onClick={() => setUpgradeModal({ emoji: '🎬', title: 'Create your event highlight reel', subtitle: 'Your selected photos are ready — generate your reel in seconds.' })}
-                      style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}
+                      style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}
                     >
                       Create Reel
                     </button>
                     <button
                       className="btn-outline"
                       onClick={() => { setShowReelBuilder(false); setReelTitle(''); setReelPhotoIds([]); }}
-                      style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}
+                      style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}
                     >
                       Cancel
                     </button>
@@ -1281,7 +1281,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Face Tagging — Premium ─────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 16 }}>Face Tagging</h3>
           {isPremium ? (
             <>
@@ -1302,7 +1302,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   }}
                 >
                   <div style={{
-                    width: 20, height: 20, borderRadius: '50%', background: 'white',
+                    width: 20, height: 20, borderRadius: 0, background: '#FDFAF2',
                     position: 'absolute', top: 3,
                     left: event.face_tagging_enabled ? 25 : 3,
                     transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
@@ -1313,7 +1313,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 </span>
               </div>
               {event.face_tagging_enabled && (
-                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.15))', borderRadius: 4, padding: '12px 16px', fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.15))', borderRadius: 0, padding: '12px 16px', fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.7 }}>
                   Enabling face tagging means guests can find photos of themselves. All guests must opt in — their consent is recorded.
                 </div>
               )}
@@ -1356,7 +1356,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   }
                   setReindexLoading(false);
                 }}
-                style={{ marginTop: 16, background: 'none', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.4))', color: 'var(--gold-dark)', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+                style={{ marginTop: 16, background: 'none', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.4))', color: 'var(--gold-dark)', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
               >
                 {reindexLoading ? reindexMsg || 'Indexing...' : 'Re-index All Photos'}
               </button>
@@ -1387,7 +1387,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                   }
                   setFaceDeleteLoading(false);
                 }}
-                style={{ marginTop: 16, background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+                style={{ marginTop: 16, background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
               >
                 {faceDeleteLoading ? 'Deleting...' : 'Delete All Face Data'}
               </button>
@@ -1400,7 +1400,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, fontWeight: 300 }}>
                 Guests take a selfie and instantly find every photo that includes them.
               </p>
-              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🤳', title: 'Let guests find themselves', subtitle: 'Enable face tagging so every guest can take a selfie and instantly see all their photos from the event.' })} style={{ padding: '10px 24px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={() => setUpgradeModal({ emoji: '🤳', title: 'Let guests find themselves', subtitle: 'Enable face tagging so every guest can take a selfie and instantly see all their photos from the event.' })} style={{ padding: '10px 24px', borderRadius: 0, fontSize: '0.78rem' }}>
                 Enable Face Tagging
               </button>
             </>
@@ -1409,7 +1409,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
 
         {/* ─── Nudge Section ─────────────────────────────────────────── */}
         <div style={{
-          background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 24,
+          background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 24,
           opacity: isDisabled ? 0.5 : 1, pointerEvents: isDisabled ? 'none' : 'auto',
         }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 8 }}>Send Nudge</h3>
@@ -1420,18 +1420,18 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
             <>
               {/* Milestone nudge */}
               {milestone && (
-                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 6, padding: '14px 18px', marginBottom: 16 }}>
+                <div style={{ background: 'var(--accent-tint-soft, rgba(201,168,76,0.06))', border: '1px solid var(--accent-tint-medium, rgba(201,168,76,0.2))', borderRadius: 0, padding: '14px 18px', marginBottom: 16 }}>
                   <p style={{ fontSize: '0.88rem', color: 'var(--charcoal)', marginBottom: 10, fontWeight: 500 }}>
                     {milestone.msg}
                   </p>
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <button className="btn-outline" onClick={() => handleNudgeCopy(nudgeMessage)} style={{ padding: '8px 16px', borderRadius: 3, fontSize: '0.72rem' }}>
+                    <button className="btn-outline" onClick={() => handleNudgeCopy(nudgeMessage)} style={{ padding: '8px 16px', borderRadius: 0, fontSize: '0.72rem' }}>
                       {nudgeCopyLabel}
                     </button>
-                    <button className="btn-gold" onClick={() => handleNudgeWhatsApp(nudgeMessage)} style={{ padding: '8px 16px', borderRadius: 3, fontSize: '0.72rem' }}>
+                    <button className="btn-gold" onClick={() => handleNudgeWhatsApp(nudgeMessage)} style={{ padding: '8px 16px', borderRadius: 0, fontSize: '0.72rem' }}>
                       WhatsApp
                     </button>
-                    <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '8px 16px', borderRadius: 3, fontSize: '0.72rem', textDecoration: 'none', textAlign: 'center' }}>
+                    <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '8px 16px', borderRadius: 0, fontSize: '0.72rem', textDecoration: 'none', textAlign: 'center' }}>
                       SMS
                     </a>
                   </div>
@@ -1441,17 +1441,17 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, fontWeight: 300 }}>
                 Remind guests to upload their photos and videos
               </p>
-              <div style={{ background: 'var(--cream)', borderRadius: 4, padding: '12px 16px', marginBottom: 16, fontSize: '0.85rem', lineHeight: 1.6, color: 'var(--charcoal)' }}>
+              <div style={{ background: 'var(--cream)', borderRadius: 0, padding: '12px 16px', marginBottom: 16, fontSize: '0.85rem', lineHeight: 1.6, color: 'var(--charcoal)' }}>
                 {nudgeMessage}
               </div>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <button className="btn-outline" onClick={() => handleNudgeCopy()} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-outline" onClick={() => handleNudgeCopy()} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                   {nudgeCopyLabel}
                 </button>
-                <button className="btn-gold" onClick={() => handleNudgeWhatsApp()} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-gold" onClick={() => handleNudgeWhatsApp()} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                   Share via WhatsApp
                 </button>
-                <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem', textDecoration: 'none', textAlign: 'center' }}>
+                <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem', textDecoration: 'none', textAlign: 'center' }}>
                   Share via SMS
                 </a>
               </div>
@@ -1461,17 +1461,17 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, fontWeight: 300 }}>
                 Remind guests to upload their photos and videos
               </p>
-              <div style={{ background: 'var(--cream)', borderRadius: 4, padding: '12px 16px', marginBottom: 16, fontSize: '0.85rem', lineHeight: 1.6, color: 'var(--charcoal)' }}>
+              <div style={{ background: 'var(--cream)', borderRadius: 0, padding: '12px 16px', marginBottom: 16, fontSize: '0.85rem', lineHeight: 1.6, color: 'var(--charcoal)' }}>
                 {nudgeMessage}
               </div>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <button className="btn-outline" onClick={() => handleNudgeCopy()} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-outline" onClick={() => handleNudgeCopy()} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                   {nudgeCopyLabel}
                 </button>
-                <button className="btn-gold" onClick={() => handleNudgeWhatsApp()} style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem' }}>
+                <button className="btn-gold" onClick={() => handleNudgeWhatsApp()} style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem' }}>
                   Share via WhatsApp
                 </button>
-                <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '10px 20px', borderRadius: 3, fontSize: '0.78rem', textDecoration: 'none', textAlign: 'center' }}>
+                <a href={`sms:?&body=${encodeURIComponent(nudgeMessage)}`} className="btn-outline" style={{ padding: '10px 20px', borderRadius: 0, fontSize: '0.78rem', textDecoration: 'none', textAlign: 'center' }}>
                   Share via SMS
                 </a>
               </div>
@@ -1493,7 +1493,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
               {photos.map((photo) => (
-                <div key={photo.id} style={{ position: 'relative', aspectRatio: '1', borderRadius: 4, overflow: 'hidden', background: '#000' }}>
+                <div key={photo.id} style={{ position: 'relative', aspectRatio: '1', borderRadius: 0, overflow: 'hidden', background: '#000' }}>
                   {photo.media_type === 'video' ? (
                     <video src={photo.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'pointer' }} onClick={() => setLightbox(photo)} />
                   ) : (
@@ -1503,7 +1503,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     onClick={(e) => { e.stopPropagation(); handleDeletePhoto(photo.id); }}
                     style={{
                       position: 'absolute', top: 6, right: 6,
-                      background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%',
+                      background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: 0,
                       width: 28, height: 28, cursor: 'pointer', color: 'white',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '0.75rem', lineHeight: 1,
@@ -1520,15 +1520,15 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         {/* QR Code section */}
         <div style={{ marginTop: 40, textAlign: 'center' }}>
           <div className="divider" style={{ marginBottom: 28 }}>QR Code</div>
-          <div style={{ display: 'inline-block', padding: 32, background: 'white', borderRadius: 12, boxShadow: 'var(--shadow)' }}>
+          <div style={{ display: 'inline-block', padding: 32, background: '#FDFAF2', borderRadius: 0, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
             <QRCode value={qrUrl} size={280} />
             <p style={{ fontSize: '0.92rem', fontFamily: 'Cormorant Garamond, serif', letterSpacing: '0.25em', color: 'var(--charcoal)', marginTop: 16, fontWeight: 400 }}>{event.id}</p>
             <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 4 }}>Scan to join · eventsnapapp.live</p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
-              <button className="btn-outline" onClick={handleCopyLink} style={{ padding: '8px 18px', borderRadius: 3, fontSize: '0.72rem' }}>
+              <button className="btn-outline" onClick={handleCopyLink} style={{ padding: '8px 18px', borderRadius: 0, fontSize: '0.72rem' }}>
                 Copy Join Link
               </button>
-              <button className="btn-gold" onClick={handleOpenSlideshow} style={{ padding: '8px 18px', borderRadius: 3, fontSize: '0.72rem' }}>
+              <button className="btn-gold" onClick={handleOpenSlideshow} style={{ padding: '8px 18px', borderRadius: 0, fontSize: '0.72rem' }}>
                 Open Slideshow
               </button>
             </div>
@@ -1536,7 +1536,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         </div>
 
         {/* ─── Danger Zone ─────────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: 6, padding: 28, boxShadow: 'var(--shadow)', marginTop: 40 }}>
+        <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080', marginTop: 40 }}>
           <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 12 }}>Danger Zone</h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, lineHeight: 1.6 }}>
             Permanently delete this event, all photos and videos, face data, and settings. This cannot be undone.
@@ -1571,7 +1571,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                 setDeleteEventLoading(false);
               }
             }}
-            style={{ background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+            style={{ background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
           >
             {deleteEventLoading ? 'Deleting...' : 'Delete Event Permanently'}
           </button>
