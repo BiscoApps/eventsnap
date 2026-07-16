@@ -129,6 +129,24 @@ export const approvePhoto = async (photoId) => {
   return { data, error };
 };
 
+export const getReportedPhotos = async (eventId) => {
+  const { data, error } = await supabase
+    .from('photos')
+    .select('*')
+    .eq('event_id', eventId)
+    .eq('moderation_status', 'reported')
+    .order('created_at', { ascending: true });
+  return { data: data || [], error };
+};
+
+export const restorePhoto = async (photoId) => {
+  const { data, error } = await supabase
+    .from('photos')
+    .update({ moderation_status: 'approved' })
+    .eq('id', photoId);
+  return { data, error };
+};
+
 export const deletePhoto = async (photoId, filePath) => {
   if (filePath) {
     await supabase.storage.from('event-photos').remove([filePath]);

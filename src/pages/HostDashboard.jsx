@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getEvent, getPhotos, updateEvent, uploadFile, getAllPhotosCount, getUniqueGuestCount, getUploadsPerDay, getTopUploaders, getLastUploadTime, getReels, supabase } from '../store.js';
+import { getEvent, getPhotos, updateEvent, uploadFile, getAllPhotosCount, getUniqueGuestCount, getUploadsPerDay, getTopUploaders, getLastUploadTime, getReels, getReportedPhotos, restorePhoto, supabase } from '../store.js';
 import { useAuth } from '../contexts/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import ModerationQueue from '../components/ModerationQueue.jsx';
@@ -100,6 +100,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   const { user, signOut } = useAuth();
   const [event, setEvent] = useState(null);
   const [photos, setPhotos] = useState([]);
+  const [reportedPhotos, setReportedPhotos] = useState([]);
   const [lightbox, setLightbox] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [guestCount, setGuestCount] = useState(0);
@@ -166,6 +167,11 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
     setGuestCount(guests);
   }, [eventCode]);
 
+  const loadReported = useCallback(async () => {
+    const { data } = await getReportedPhotos(eventCode);
+    setReportedPhotos(data || []);
+  }, [eventCode]);
+
   const loadAnalytics = useCallback(async () => {
     const { data: dailyData } = await getUploadsPerDay(eventCode);
     setUploadsPerDay(dailyData || []);
@@ -192,9 +198,10 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
     loadEvent();
     loadPhotos();
     loadStats();
+    loadReported();
     loadReels();
     verifyAccess();
-  }, [loadEvent, loadPhotos, loadStats, loadReels, verifyAccess]);
+  }, [loadEvent, loadPhotos, loadStats, loadReported, loadReels, verifyAccess]);
 
   // Load analytics when event is loaded and premium
   useEffect(() => {
@@ -661,6 +668,34 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
               <p style={{ fontSize: '0.85rem', color: 'var(--muted)', fontWeight: 300 }}>
                 All photos and videos are published instantly
               </p>
+            )}
+          </div>
+
+          {/* ─── Panel: Reported Photos ─────────────────────────────── */}
+          <div style={{ background: '#FDFAF2', borderRadius: 0, padding: 28, boxShadow: '3px 3px 0 #C8A830', border: '2px solid #E8D080' }}>
+            <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 20 }}>Reported Photos</h3>
+            {reportedPhotos.length === 0 ? (
+              <p style={{ fontSize: '0.85rem', color: 'var(--muted)', fontWeight: 300 }}>
+                No reported photos
+              </p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 16 }}>
+                {reportedPhotos.map((photo) => (
+                  <div key={photo.id} style={{ borderRadius: 0, overflow: 'hidden', border: '2px solid #E8D080' }}>
+                    <img src={photo.image_url} alt="" style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block' }} />
+                    <div style={{ display: 'flex', gap: 6, padding: 8 }}>
+                      <button
+                        onClick={async () => { await restorePhoto(photo.id); loadReported(); loadPhotos(); }}
+                        style={{ flex: 1, background: 'var(--gold)', border: 'none', color: 'var(--charcoal)', padding: '6px 0', borderRadius: 0, fontSize: '0.7rem', cursor: 'pointer' }}
+                      >Restore</button>
+                      <button
+                        onClick={async () => { await handleDeletePhoto(photo.id); loadReported(); }}
+                        style={{ flex: 1, background: 'var(--border)', border: 'none', color: 'var(--charcoal)', padding: '6px 0', borderRadius: 0, fontSize: '0.7rem', cursor: 'pointer' }}
+                      >Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../config.js';
 
 const formatTime = (dateStr) => {
   if (!dateStr) return '';
@@ -134,6 +135,23 @@ const handleShare = async (fileUrl, fileName, eventName) => {
   }
 };
 
+const handleReport = async (photoId, eventCode) => {
+  if (!window.confirm('Report this photo as inappropriate? It will be hidden while the host reviews it.')) return;
+  try {
+    const response = await fetch(`${API_BASE}/.netlify/functions/report-photo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ photoId, eventCode }),
+    });
+    if (response.ok) {
+      alert('Thank you. This photo has been hidden and sent to the host for review.');
+      window.location.reload();
+    }
+  } catch (err) {
+    console.error('Report failed:', err);
+  }
+};
+
 const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' }) => {
   const t = THEMES[theme] || THEMES.classic;
   return (
@@ -167,6 +185,7 @@ const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' })
               <div style={{ display: 'flex', gap: 8, marginTop: 4 }} onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => handleSave(p.image_url, fileName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Save</button>
                 <button onClick={() => handleShare(p.image_url, fileName, eventName)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>Share</button>
+                <button onClick={() => handleReport(p.id, p.event_id)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '3px 8px', borderRadius: 3, fontSize: '0.65rem', cursor: 'pointer' }}>🚩 Report</button>
               </div>
             </div>
           </div>
