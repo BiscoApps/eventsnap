@@ -685,7 +685,15 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                     <img src={photo.image_url} alt="" style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block' }} />
                     <div style={{ display: 'flex', gap: 6, padding: 8 }}>
                       <button
-                        onClick={async () => { await restorePhoto(photo.id); loadReported(); loadPhotos(); }}
+                        onClick={async () => {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          const res = await fetch(`${API_BASE}/.netlify/functions/restore-photo`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ photoId: photo.id, eventCode, accessToken: session?.access_token }),
+                          });
+                          if (res.ok) { await loadReported(); await loadPhotos(); }
+                        }}
                         style={{ flex: 1, background: 'var(--gold)', border: 'none', color: 'var(--charcoal)', padding: '6px 0', borderRadius: 0, fontSize: '0.7rem', cursor: 'pointer' }}
                       >Restore</button>
                       <button
