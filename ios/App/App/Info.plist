@@ -22,6 +22,12 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EventSnap needs camera access so you can take and share photos and videos at your event.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>EventSnap needs photo library access so you can upload photos and videos to your event gallery.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>EventSnap needs permission to save photos and videos from your event to your device.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
