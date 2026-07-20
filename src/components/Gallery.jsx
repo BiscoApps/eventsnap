@@ -202,11 +202,39 @@ const handleReport = async (photoId, eventCode) => {
   }
 };
 
+const PAGE_SIZE = 20;
+
 const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' }) => {
   const t = THEMES[theme] || THEMES.classic;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef(null);
+
+  const hasMore = visibleCount < items.length;
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisibleCount(items.length);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisibleCount((c) => Math.min(c + PAGE_SIZE, items.length));
+        }
+      },
+      { rootMargin: '400px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, items.length, visibleCount]);
+
   return (
+    <>
     <div style={large ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 } : undefined} className={large ? undefined : 'photo-grid'}>
-      {items.map((p) => {
+      {items.slice(0, visibleCount).map((p) => {
         const isVideo = p.media_type === 'video';
         const fileName = p.image_url?.split('/').pop() || 'photo';
         const time = formatTime(p.taken_at);
@@ -242,6 +270,8 @@ const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' })
         );
       })}
     </div>
+      {hasMore && <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />}
+    </>
   );
 };
 
