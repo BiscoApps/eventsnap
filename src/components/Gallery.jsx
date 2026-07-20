@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { API_BASE } from '../config.js';
 
 const formatTime = (dateStr) => {
@@ -23,42 +23,92 @@ const THEMES = {
   film:    { stampBg: '#FFF7EC',          stampText: '#FF5A1F', showDate: true,  grain: true  },
 };
 
+const THUMB_MAX_EDGE = 400;
+
 const VideoThumbnail = ({ src }) => {
   const [thumb, setThumb] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const rootRef = useRef(null);
+
+  // Only begin generating once the tile scrolls into view.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px', threshold: 0.01 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!visible) return;
+
+    let cancelled = false;
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.preload = 'metadata';
     video.muted = true;
     video.playsInline = true;
 
-    video.onloadeddata = () => {
-      video.currentTime = 0.1;
+    const onLoadedMetadata = () => {
+      if (cancelled) return;
+      const d = video.duration;
+      const target = Number.isFinite(d) && d > 0 ? Math.min(0.1, d / 2) : 0.1;
+      video.currentTime = target > 0 ? target : 0.1;
     };
 
-    video.onseeked = () => {
+    const onSeeked = () => {
+      if (cancelled) return;
       try {
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        if (!vw || !vh) {
+          setThumb(null);
+          return;
+        }
+        const scale = Math.min(1, THUMB_MAX_EDGE / Math.max(vw, vh));
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        setThumb(canvas.toDataURL('image/jpeg'));
+        canvas.width = Math.round(vw * scale);
+        canvas.height = Math.round(vh * scale);
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        setThumb(canvas.toDataURL('image/jpeg', 0.7));
       } catch {
         setThumb(null);
       }
     };
 
-    video.onerror = () => setThumb(null);
+    const onError = () => {
+      if (!cancelled) setThumb(null);
+    };
+
+    video.addEventListener('loadedmetadata', onLoadedMetadata);
+    video.addEventListener('seeked', onSeeked);
+    video.addEventListener('error', onError);
     video.src = src;
 
     return () => {
-      video.src = '';
+      cancelled = true;
+      video.removeEventListener('loadedmetadata', onLoadedMetadata);
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+      video.removeAttribute('src');
+      video.load();
     };
-  }, [src]);
+  }, [src, visible]);
 
   return (
-    <>
+    <div ref={rootRef} style={{ position: 'absolute', inset: 0 }}>
       {thumb ? (
         <img src={thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
@@ -94,7 +144,7 @@ const VideoThumbnail = ({ src }) => {
           }} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
