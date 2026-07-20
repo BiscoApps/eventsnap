@@ -23,6 +23,13 @@ const THEMES = {
   film:    { stampBg: '#FFF7EC',          stampText: '#FF5A1F', showDate: true,  grain: true  },
 };
 
+const thumbUrl = (url) => {
+  if (!url) return url;
+  // Only transform Supabase storage public image URLs; leave anything else untouched
+  if (!url.includes('/storage/v1/object/public/')) return url;
+  return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + (url.includes('?') ? '&' : '?') + 'width=500&quality=70';
+};
+
 const THUMB_MAX_EDGE = 400;
 
 const VideoThumbnail = ({ src }) => {
@@ -245,7 +252,16 @@ const PhotoGrid = ({ items, eventName, onPhotoClick, large, theme = 'classic' })
             {isVideo ? (
               <VideoThumbnail src={p.image_url} />
             ) : (
-              <img src={p.image_url} alt="" loading="lazy" />
+              <img
+                src={thumbUrl(p.image_url)}
+                alt=""
+                loading="lazy"
+                onError={(e) => {
+                  if (e.currentTarget.dataset.fallback) return;
+                  e.currentTarget.dataset.fallback = '1';
+                  e.currentTarget.src = p.image_url;
+                }}
+              />
             )}
             {t.grain && (
               <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1.5px, transparent 3px)', opacity: 0.4, mixBlendMode: 'overlay' }} />
