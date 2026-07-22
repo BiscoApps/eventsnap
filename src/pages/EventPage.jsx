@@ -20,6 +20,9 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
   const [guestName, setGuestName] = useState(() => sessionStorage.getItem('guestName') || '');
   const [photoCount, setPhotoCount] = useState(0);
   const [faceFilter, setFaceFilter] = useState(null); // null = show all, array = show filtered
+  // setFaceFilter(null) is a no-op when faceFilter is already null — React bails out and the
+  // face-tagging gate below never re-evaluates. Bumping this forces the re-render.
+  const [, bumpConsent] = useState(0);
   const [reels, setReels] = useState([]);
   const [activePanel, setActivePanel] = useState(isNativeApp ? 'camera' : 'gallery');
 
@@ -148,6 +151,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
         }}
         onSkip={() => {
           setFaceFilter(null);
+          bumpConsent((n) => n + 1);
         }}
         onRetry={() => {
           setFaceFilter(null);
@@ -218,7 +222,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
             )}
             <div style={{ textAlign: 'right', marginBottom: 12, display: 'flex', justifyContent: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
               {event.face_tagging_enabled && (
-                <button onClick={() => { sessionStorage.removeItem('faceTagConsent'); sessionStorage.removeItem('faceMatchIds'); setFaceFilter(null); }} style={{ display: 'inline-block', fontSize: '0.75rem', color: 'var(--gold-dark)', background: 'none', border: '1px solid var(--gold)', borderRadius: 0, padding: '6px 14px', fontFamily: "'Courier Prime', monospace", letterSpacing: '0.03em', cursor: 'pointer' }}>
+                <button onClick={() => { sessionStorage.removeItem('faceTagConsent'); sessionStorage.removeItem('faceMatchIds'); setFaceFilter(null); bumpConsent((n) => n + 1); }} style={{ display: 'inline-block', fontSize: '0.75rem', color: 'var(--gold-dark)', background: 'none', border: '1px solid var(--gold)', borderRadius: 0, padding: '6px 14px', fontFamily: "'Courier Prime', monospace", letterSpacing: '0.03em', cursor: 'pointer' }}>
                   🔍 Find my photos
                 </button>
               )}

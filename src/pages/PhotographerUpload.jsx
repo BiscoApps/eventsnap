@@ -63,9 +63,43 @@ const PhotographerUpload = ({ eventCode, toast }) => {
     setUploading(false);
   };
 
+  const backButton = (
+    <button
+      onClick={() => {
+        if (window.history.length > 1) window.history.back();
+        else window.location.hash = '#/';
+      }}
+      aria-label="Back"
+      style={{
+        position: 'fixed',
+        top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        left: 'calc(env(safe-area-inset-left, 0px) + 16px)',
+        minWidth: 44,
+        minHeight: 44,
+        padding: '0 18px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(255,255,255,0.92)',
+        border: '1px solid rgba(0,0,0,0.12)',
+        borderRadius: 22,
+        color: 'var(--charcoal)',
+        fontSize: '0.85rem',
+        fontFamily: "'Jost', sans-serif",
+        lineHeight: 1,
+        cursor: 'pointer',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+        zIndex: 1000,
+      }}
+    >
+      ← Back
+    </button>
+  );
+
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        {backButton}
         <div className="loader" />
       </div>
     );
@@ -74,6 +108,7 @@ const PhotographerUpload = ({ eventCode, toast }) => {
   if (!event) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {backButton}
         <div style={{ textAlign: 'center' }}>
           <h2 className="serif" style={{ fontSize: '2rem', fontWeight: 300, marginBottom: 8 }}>Event not found</h2>
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>Check the URL and try again.</p>
@@ -85,6 +120,7 @@ const PhotographerUpload = ({ eventCode, toast }) => {
   if (event.plan !== 'premium' && event.plan !== 'premium_max') {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {backButton}
         <div style={{ textAlign: 'center' }}>
           <h2 className="serif" style={{ fontSize: '2rem', fontWeight: 300, marginBottom: 8 }}>Premium Feature</h2>
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>Photographer access requires a Premium event.</p>
@@ -98,6 +134,7 @@ const PhotographerUpload = ({ eventCode, toast }) => {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+      {backButton}
       <div style={{ background: 'var(--charcoal)', padding: '48px 24px 40px', textAlign: 'center', color: 'white' }}>
         <span className="badge" style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold-light)', marginBottom: 16 }}>✦ Photographer Upload</span>
         <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 300, marginBottom: 8 }}>{event.title}</h1>

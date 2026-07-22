@@ -168,9 +168,15 @@ const FaceTagConsent = ({ event, onAccept, onSkip, onRetry }) => {
           <p style={{ fontSize: '1.1rem', color: 'var(--charcoal)', fontWeight: 300, marginBottom: 20 }}>
             {matchCount} photo{matchCount !== 1 ? 's' : ''} and video{matchCount !== 1 ? 's' : ''} featuring you
           </p>
-          <button className="btn-outline" onClick={handleRetry} style={{ padding: '10px 24px', borderRadius: 3 }}>
-            Search again
-          </button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {/* handleSkip stores consent and calls onSkip, which is what releases the gate in EventPage */}
+            <button className="btn-outline" onClick={handleSkip} style={{ padding: '10px 24px', borderRadius: 3, minHeight: 44 }}>
+              Continue to gallery
+            </button>
+            <button className="btn-outline" onClick={handleRetry} style={{ padding: '10px 24px', borderRadius: 3, minHeight: 44 }}>
+              Search again
+            </button>
+          </div>
         </div>
       )}
     </div>

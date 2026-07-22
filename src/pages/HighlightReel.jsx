@@ -172,7 +172,55 @@ const HighlightReel = ({ eventCode, reelId }) => {
     );
   }
 
-  if (!event) return null;
+  if (!event) {
+    return (
+      <div style={{
+        background: '#000',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        fontFamily: "'Jost', sans-serif",
+        textAlign: 'center',
+        padding: 'calc(env(safe-area-inset-top, 0px) + 40px) 40px calc(env(safe-area-inset-bottom, 0px) + 40px)',
+      }}>
+        <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, marginBottom: 12, color: '#c9a84c' }}>
+          Reel unavailable
+        </h1>
+        <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', fontWeight: 300, marginBottom: 32 }}>
+          This reel could not be loaded.
+        </p>
+        <button
+          onClick={() => {
+            if (window.history.length > 1) window.history.back();
+            else window.location.hash = '#/';
+          }}
+          aria-label="Back"
+          style={{
+            minWidth: 44,
+            minHeight: 44,
+            padding: '0 24px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            borderRadius: 22,
+            color: 'white',
+            fontSize: '0.95rem',
+            fontFamily: "'Jost', sans-serif",
+            lineHeight: 1,
+            cursor: 'pointer',
+            zIndex: 1000,
+          }}
+        >
+          ← Back
+        </button>
+      </div>
+    );
+  }
 
   const accentColor = event.brand_color || '#c9a84c';
 
