@@ -128,21 +128,106 @@ const HighlightReel = ({ eventCode, reelId }) => {
     }
   };
 
+  // Exit — opened via window.open in the same webview, so there is no browser chrome
+  const handleExit = () => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.hash = `#/event/${eventCode}`;
+  };
+
+  const closeButton = (
+    <button
+      onClick={handleExit}
+      aria-label="Close reel"
+      style={{
+        position: 'fixed',
+        top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        right: 16,
+        minWidth: 44,
+        minHeight: 44,
+        padding: '0 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0,0,0,0.6)',
+        border: '1px solid rgba(255,255,255,0.25)',
+        borderRadius: 22,
+        color: 'white',
+        fontSize: '0.85rem',
+        fontFamily: "'Jost', sans-serif",
+        lineHeight: 1,
+        cursor: 'pointer',
+        zIndex: 1000,
+      }}
+    >
+      ✕ Close
+    </button>
+  );
+
   if (loading) {
     return (
       <div style={{ background: '#000', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        {closeButton}
         <div className="loader" style={{ width: 40, height: 40, borderWidth: 3 }} />
       </div>
     );
   }
 
-  if (!event) return null;
+  if (!event) {
+    return (
+      <div style={{
+        background: '#000',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        fontFamily: "'Jost', sans-serif",
+        textAlign: 'center',
+        padding: 'calc(env(safe-area-inset-top, 0px) + 40px) 40px calc(env(safe-area-inset-bottom, 0px) + 40px)',
+      }}>
+        <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, marginBottom: 12, color: '#c9a84c' }}>
+          Reel unavailable
+        </h1>
+        <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', fontWeight: 300, marginBottom: 32 }}>
+          This reel could not be loaded.
+        </p>
+        <button
+          onClick={() => {
+            if (window.history.length > 1) window.history.back();
+            else window.location.hash = '#/';
+          }}
+          aria-label="Back"
+          style={{
+            minWidth: 44,
+            minHeight: 44,
+            padding: '0 24px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            borderRadius: 22,
+            color: 'white',
+            fontSize: '0.95rem',
+            fontFamily: "'Jost', sans-serif",
+            lineHeight: 1,
+            cursor: 'pointer',
+            zIndex: 1000,
+          }}
+        >
+          ← Back
+        </button>
+      </div>
+    );
+  }
 
   const accentColor = event.brand_color || '#c9a84c';
 
   if (photos.length === 0) {
     return (
       <div style={{ background: '#000', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: "'Jost', sans-serif", textAlign: 'center', padding: 40 }}>
+        {closeButton}
         <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, marginBottom: 12, color: accentColor }}>{event.title}</h1>
         <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', fontWeight: 300 }}>No reel found.</p>
       </div>
@@ -164,6 +249,7 @@ const HighlightReel = ({ eventCode, reelId }) => {
         @keyframes reelSlide { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes reelZoom { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
       `}</style>
+      {closeButton}
 
       {/* Media */}
       <div key={transitionKey} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'reelFade 0.8s ease both' }}>
@@ -180,7 +266,7 @@ const HighlightReel = ({ eventCode, reelId }) => {
       </div>
 
       {/* Event name — top right */}
-      <div style={{ position: 'absolute', top: 20, right: 24, zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 76, right: 24, zIndex: 10 }}>
         <h2 className="serif" style={{ fontSize: 'clamp(1rem, 2vw, 1.6rem)', fontWeight: 300, color: accentColor, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{event.title}</h2>
       </div>
 

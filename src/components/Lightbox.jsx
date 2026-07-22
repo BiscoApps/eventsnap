@@ -205,7 +205,25 @@ const Lightbox = ({ item, photos, currentIndex, onNavigate, eventName, onClose }
 
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: -40, right: 0, background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.6 }}
+          aria-label="Close"
+          style={{
+            position: 'fixed',
+            top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+            right: 16,
+            width: 44,
+            height: 44,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            border: 'none',
+            borderRadius: '50%',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '1.2rem',
+            lineHeight: 1,
+            zIndex: 1100,
+          }}
         >
           ✕
         </button>

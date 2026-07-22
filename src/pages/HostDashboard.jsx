@@ -131,6 +131,8 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   const [deleteEventMsg, setDeleteEventMsg] = useState('');
   const [posterDesign, setPosterDesign] = useState('design1');
   const [upgradeModal, setUpgradeModal] = useState(null);
+  const [posterHtml, setPosterHtml] = useState(null);
+  const posterFrameRef = useRef(null);
   const [accessDenied, setAccessDenied] = useState(false);
 
   const loadEvent = useCallback(async () => {
@@ -471,9 +473,21 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
       </body></html>`;
     }
 
-    const w = window.open('', '_blank');
-    w.document.write(html);
-    w.document.close();
+    // iOS WKWebView loads window.open('') into the same webview with no chrome,
+    // replacing the app with a bare document and no way back. Render in-app instead.
+    // The auto-print script is stripped — printing is driven by the overlay button.
+    setPosterHtml(html.replace(/<script>[\s\S]*?<\/script>/gi, ''));
+  };
+
+  const handleDownloadPoster = () => {
+    const frame = posterFrameRef.current;
+    if (!frame?.contentWindow) return;
+    try {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+    } catch {
+      toast.show('Printing is not available on this device.');
+    }
   };
 
   // ─── Nudge ────────────────────────────────────────────────────────────
@@ -526,6 +540,68 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
             <button onClick={() => setUpgradeModal(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.82rem', fontFamily: 'Jost, sans-serif' }}>
               Maybe later
             </button>
+          </div>
+        </div>
+      )}
+      {posterHtml && (
+        <div
+          onClick={() => setPosterHtml(null)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 2000,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: 'calc(env(safe-area-inset-top, 0px) + 96px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px)',
+          }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setPosterHtml(null); }}
+            aria-label="Close poster"
+            style={{
+              position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 16px)', right: 16,
+              width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: 22, color: 'white', fontSize: '1.1rem',
+              fontFamily: "'Jost', sans-serif", lineHeight: 1, cursor: 'pointer', zIndex: 2001,
+            }}
+          >
+            ✕
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); handleDownloadPoster(); }}
+            style={{
+              position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 16px)', left: 16,
+              minWidth: 44, minHeight: 44, padding: '0 18px',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: 22, color: 'white', fontSize: '0.82rem',
+              fontFamily: "'Jost', sans-serif", lineHeight: 1, cursor: 'pointer', zIndex: 2001,
+            }}
+          >
+            Download / Save PDF
+          </button>
+          <div
+            style={{
+              position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 66px)', left: 16, right: 16,
+              fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)',
+              fontFamily: "'Jost', sans-serif", fontWeight: 300, zIndex: 2001, pointerEvents: 'none',
+            }}
+          >
+            Printing works on desktop. On iPhone, take a screenshot for now.
+          </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%', maxWidth: 820, flex: 1, overflow: 'auto',
+              WebkitOverflowScrolling: 'touch', background: '#fff',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+            }}
+          >
+            <iframe
+              ref={posterFrameRef}
+              srcDoc={posterHtml}
+              title="QR Poster preview"
+              sandbox="allow-same-origin allow-modals"
+              style={{ width: '100%', height: '100%', minHeight: 1000, border: 'none', display: 'block' }}
+            />
           </div>
         </div>
       )}
