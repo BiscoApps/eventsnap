@@ -177,9 +177,45 @@ const Slideshow = ({ eventCode }) => {
     setTransitionKey((k) => k + 1);
   };
 
+  // Exit — opened via window.open in the same webview, so there is no browser chrome
+  const handleExit = () => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.hash = `#/host/${eventCode}`;
+  };
+
+  const closeButton = (
+    <button
+      onClick={handleExit}
+      aria-label="Close slideshow"
+      style={{
+        position: 'fixed',
+        top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        right: 16,
+        minWidth: 44,
+        minHeight: 44,
+        padding: '0 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0,0,0,0.6)',
+        border: '1px solid rgba(255,255,255,0.25)',
+        borderRadius: 22,
+        color: 'white',
+        fontSize: '0.85rem',
+        fontFamily: "'Jost', sans-serif",
+        lineHeight: 1,
+        cursor: 'pointer',
+        zIndex: 1000,
+      }}
+    >
+      ✕ Close
+    </button>
+  );
+
   if (!event) {
     return (
       <div style={{ background: '#000', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        {closeButton}
         <div className="loader" style={{ width: 40, height: 40, borderWidth: 3 }} />
       </div>
     );
@@ -229,6 +265,7 @@ const Slideshow = ({ eventCode }) => {
         }}
       >
         <style>{slideshowStyles}</style>
+        {closeButton}
         <h1 className="serif" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, marginBottom: 12, color: accentColor }}>
           {event.title}
         </h1>
@@ -245,7 +282,7 @@ const Slideshow = ({ eventCode }) => {
           {event.id}
         </p>
         {/* Live counter */}
-        <div style={{ position: 'fixed', top: 20, right: 24, background: 'rgba(0,0,0,0.6)', borderRadius: 20, padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ position: 'fixed', top: 76, right: 24, background: 'rgba(0,0,0,0.6)', borderRadius: 20, padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#48bb78', animation: 'pulse 2s ease infinite' }} />
           <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)' }}>{photos.length} photos</span>
         </div>
@@ -274,6 +311,7 @@ const Slideshow = ({ eventCode }) => {
       }}
     >
       <style>{slideshowStyles}</style>
+      {closeButton}
 
       {/* Media display */}
       <div key={transitionKey} style={getTransitionStyle()}>
@@ -337,7 +375,7 @@ const Slideshow = ({ eventCode }) => {
       {/* Live counter overlay — top right */}
       <div style={{
         position: 'absolute',
-        top: 20,
+        top: 76,
         right: 24,
         zIndex: 10,
         background: 'rgba(0,0,0,0.6)',
