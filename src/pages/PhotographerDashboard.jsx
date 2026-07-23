@@ -144,12 +144,21 @@ const PhotographerDashboard = ({ onNavigate, toast }) => {
               </h1>
               <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: 6, fontSize: '0.88rem' }}>{proAuth?.email}</p>
             </div>
-            <button
-              onClick={handleSignOut}
-              style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)', padding: '8px 20px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
-            >
-              Sign Out
-            </button>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button
+                onClick={() => { window.location.hash = '#/'; }}
+                aria-label="Home"
+                style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)', padding: '8px 20px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+              >
+                ← Home
+              </button>
+              <button
+                onClick={handleSignOut}
+                style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)', padding: '8px 20px', borderRadius: 3, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </div>

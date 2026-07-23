@@ -28,6 +28,36 @@ export default function SignInPage({ onNavigate }) {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <button
+        onClick={() => {
+          if (window.history.length > 1) window.history.back();
+          else window.location.hash = '#/';
+        }}
+        aria-label="Back"
+        style={{
+          position: 'fixed',
+          top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+          left: 'calc(env(safe-area-inset-left, 0px) + 16px)',
+          minWidth: 44,
+          minHeight: 44,
+          padding: '0 18px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(255,255,255,0.92)',
+          border: '1px solid rgba(0,0,0,0.12)',
+          borderRadius: 22,
+          color: 'var(--charcoal)',
+          fontSize: '0.85rem',
+          fontFamily: "'Jost', sans-serif",
+          lineHeight: 1,
+          cursor: 'pointer',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+          zIndex: 1000,
+        }}
+      >
+        ← Back
+      </button>
       <div style={{ width: '100%', maxWidth: 400, animation: 'fadeUp 0.5s ease' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <div style={{ fontSize: '3rem', marginBottom: 16, color: 'var(--gold)' }}>✦</div>
