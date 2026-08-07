@@ -28,6 +28,45 @@ export function AuthProvider({ children }) {
       options: { redirectTo: window.location.origin },
     });
 
+  const signInWithApple = async () => {
+    try {
+      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+      const { response } = await SignInWithApple.authorize({ scopes: 'name email' });
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: response.identityToken,
+      });
+      if (error) return { error };
+      return { session: data.session };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signUpWithApple = async () => {
+    try {
+      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+      const { response } = await SignInWithApple.authorize({ scopes: 'name email' });
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: response.identityToken,
+      });
+      if (error) return { error };
+
+      // Apple returns the name ONLY on first sign-in — capture it now or it is gone forever.
+      const givenName = response.givenName ?? response.fullName?.givenName ?? '';
+      const familyName = response.familyName ?? response.fullName?.familyName ?? '';
+      const fullName = `${givenName} ${familyName}`.trim();
+      if (fullName && data.session?.user) {
+        await supabase.from('profiles').upsert({ id: data.session.user.id, full_name: fullName });
+      }
+
+      return { session: data.session };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const signOut = () => supabase.auth.signOut();
 
   const signInWithEmail = (email, password) =>
@@ -41,6 +80,8 @@ export function AuthProvider({ children }) {
     session,
     loading,
     signInWithGoogle,
+    signInWithApple,
+    signUpWithApple,
     signInWithEmail,
     signUpWithEmail,
     signOut,
