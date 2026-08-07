@@ -22,17 +22,30 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // NOTE: Google sign-in works on web but is disabled in the native iOS build
-  // because window.location.origin becomes capacitor://localhost, which Supabase
-  // and Google both reject as a redirect. The Google button is conditionally
-  // rendered in SignInPage.jsx and SignUpPage.jsx based on VITE_NATIVE_APP.
-  // On iOS, users use Sign in with Apple or email/password. Full deep-link
-  // Google fix planned for v1.1.
+  // NOTE: signInWithGoogle uses OAuth redirect flow — works on web only.
+  // On native iOS, use signInWithGoogleNative below, which uses the native
+  // Google Sign-In SDK and returns an idToken that Supabase validates
+  // directly (same pattern as signInWithApple).
   const signInWithGoogle = () =>
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },
     });
+
+  const signInWithGoogleNative = async () => {
+    try {
+      const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+      const result = await GoogleAuth.signIn();
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: result.authentication.idToken,
+      });
+      if (error) return { error };
+      return { session: data.session };
+    } catch (error) {
+      return { error };
+    }
+  };
 
   const signInWithApple = async () => {
     try {
@@ -86,6 +99,7 @@ export function AuthProvider({ children }) {
     session,
     loading,
     signInWithGoogle,
+    signInWithGoogleNative,
     signInWithApple,
     signUpWithApple,
     signInWithEmail,
