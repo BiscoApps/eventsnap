@@ -35,12 +35,45 @@ export function AuthProvider({ children }) {
   const signInWithGoogleNative = async () => {
     try {
       const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+      await GoogleAuth.initialize({
+        clientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com',
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: false,
+      });
       const result = await GoogleAuth.signIn();
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: result.authentication.idToken,
       });
       if (error) return { error };
+      return { session: data.session };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signUpWithGoogleNative = async () => {
+    try {
+      const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+      await GoogleAuth.initialize({
+        clientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com',
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: false,
+      });
+      const result = await GoogleAuth.signIn();
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: result.authentication.idToken,
+      });
+      if (error) return { error };
+
+      const givenName = result.givenName ?? '';
+      const familyName = result.familyName ?? '';
+      const fullName = `${givenName} ${familyName}`.trim();
+      if (fullName && data.session?.user) {
+        await supabase.from('profiles').upsert({ id: data.session.user.id, full_name: fullName });
+      }
+
       return { session: data.session };
     } catch (error) {
       return { error };
@@ -100,6 +133,7 @@ export function AuthProvider({ children }) {
     loading,
     signInWithGoogle,
     signInWithGoogleNative,
+    signUpWithGoogleNative,
     signInWithApple,
     signUpWithApple,
     signInWithEmail,

@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
 
 export default function SignUpPage({ onNavigate }) {
-  const { signInWithGoogle, signInWithGoogleNative, signUpWithApple } = useAuth();
+  const { signInWithGoogle, signUpWithGoogleNative, signUpWithApple } = useAuth();
   const [loading, setLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function SignUpPage({ onNavigate }) {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     sessionStorage.setItem('postAuthRedirect', window.location.hash);
-    const handler = isNativeApp ? signInWithGoogleNative : signInWithGoogle;
+    const handler = isNativeApp ? signUpWithGoogleNative : signInWithGoogle;
     const { error } = await handler();
     if (error) setLoading(false);
   };
