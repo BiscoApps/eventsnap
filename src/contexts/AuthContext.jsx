@@ -22,6 +22,12 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // NOTE: Google sign-in works on web but is disabled in the native iOS build
+  // because window.location.origin becomes capacitor://localhost, which Supabase
+  // and Google both reject as a redirect. The Google button is conditionally
+  // rendered in SignInPage.jsx and SignUpPage.jsx based on VITE_NATIVE_APP.
+  // On iOS, users use Sign in with Apple or email/password. Full deep-link
+  // Google fix planned for v1.1.
   const signInWithGoogle = () =>
     supabase.auth.signInWithOAuth({
       provider: 'google',

@@ -298,11 +298,11 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   };
 
   const handleViewGallery = () => {
-    window.open(`/#/event/${event.event_slug || event.id}`, '_blank');
+    window.open(`/#/event/${event.event_slug || event.id}`, '_self');
   };
 
   const handleOpenSlideshow = () => {
-    window.open(`/#/slideshow/${event.id}`, '_blank');
+    window.open(`/#/slideshow/${event.id}`, '_self');
   };
 
   const handleModerationToggle = async () => {
@@ -1212,7 +1212,7 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button
                           className="btn-outline"
-                          onClick={() => window.open(`/#/reel/${event.id}/${r.id}`, '_blank')}
+                          onClick={() => window.open(`/#/reel/${event.id}/${r.id}`, '_self')}
                           style={{ padding: '6px 12px', borderRadius: 0, fontSize: '0.72rem' }}
                         >
                           View
