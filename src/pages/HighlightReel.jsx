@@ -119,7 +119,7 @@ const HighlightReel = ({ eventCode, reelId }) => {
   };
 
   const handleShare = async () => {
-    const url = window.location.href;
+    const url = `https://eventsnapapp.live/#/reel/${eventCode}${reelId ? '/' + reelId : ''}`;
     const caption = `Captured by EventSnap — eventsnapapp.live`;
     if (navigator.share) {
       try { await navigator.share({ title: reel?.title || event?.title, text: caption, url }); } catch {}

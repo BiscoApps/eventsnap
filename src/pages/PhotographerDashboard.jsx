@@ -204,7 +204,7 @@ const PhotographerDashboard = ({ onNavigate, toast }) => {
                     <span style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>{evt.title}</span>
                     <button
                       onClick={() => {
-                        const url = `${window.location.origin}/#/upload/${evt.id}/pro`;
+                        const url = `https://eventsnapapp.live/#/upload/${evt.id}/pro`;
                         navigator.clipboard?.writeText(url).catch(() => {});
                         toast?.show('Photographer link copied!');
                       }}
