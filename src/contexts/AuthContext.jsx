@@ -23,9 +23,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   // NOTE: signInWithGoogle uses OAuth redirect flow — works on web only.
-  // On native iOS, use signInWithGoogleNative below, which uses the native
-  // Google Sign-In SDK and returns an idToken that Supabase validates
-  // directly (same pattern as signInWithApple).
+  // On native iOS, use signInWithGoogleNative below, which uses the
+  // @capgo/capacitor-social-login plugin to get an idToken directly from
+  // Google's native SDK. Same pattern as signInWithApple.
   const signInWithGoogle = () =>
     supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -34,16 +34,15 @@ export function AuthProvider({ children }) {
 
   const signInWithGoogleNative = async () => {
     try {
-      const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
-      await GoogleAuth.initialize({
-        clientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: false,
+      const { SocialLogin } = await import('@capgo/capacitor-social-login');
+      await SocialLogin.initialize({
+        google: { iOSClientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com' },
+        apple: {},
       });
-      const result = await GoogleAuth.signIn();
+      const { result } = await SocialLogin.login({ provider: 'google', options: { scopes: ['profile', 'email'] } });
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
-        token: result.authentication.idToken,
+        token: result.idToken,
       });
       if (error) return { error };
       return { session: data.session };
@@ -54,16 +53,15 @@ export function AuthProvider({ children }) {
 
   const signUpWithGoogleNative = async () => {
     try {
-      const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
-      await GoogleAuth.initialize({
-        clientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: false,
+      const { SocialLogin } = await import('@capgo/capacitor-social-login');
+      await SocialLogin.initialize({
+        google: { iOSClientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com' },
+        apple: {},
       });
-      const result = await GoogleAuth.signIn();
+      const { result } = await SocialLogin.login({ provider: 'google', options: { scopes: ['profile', 'email'] } });
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
-        token: result.authentication.idToken,
+        token: result.idToken,
       });
       if (error) return { error };
 
@@ -82,11 +80,15 @@ export function AuthProvider({ children }) {
 
   const signInWithApple = async () => {
     try {
-      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
-      const { response } = await SignInWithApple.authorize({ scopes: 'name email' });
+      const { SocialLogin } = await import('@capgo/capacitor-social-login');
+      await SocialLogin.initialize({
+        google: { iOSClientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com' },
+        apple: {},
+      });
+      const { result } = await SocialLogin.login({ provider: 'apple', options: { scopes: ['name', 'email'] } });
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
-        token: response.identityToken,
+        token: result.idToken,
       });
       if (error) return { error };
       return { session: data.session };
@@ -97,17 +99,21 @@ export function AuthProvider({ children }) {
 
   const signUpWithApple = async () => {
     try {
-      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
-      const { response } = await SignInWithApple.authorize({ scopes: 'name email' });
+      const { SocialLogin } = await import('@capgo/capacitor-social-login');
+      await SocialLogin.initialize({
+        google: { iOSClientId: '981094037952-4574jal4cfha76tu99rjeorig8b3uhic.apps.googleusercontent.com' },
+        apple: {},
+      });
+      const { result } = await SocialLogin.login({ provider: 'apple', options: { scopes: ['name', 'email'] } });
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
-        token: response.identityToken,
+        token: result.idToken,
       });
       if (error) return { error };
 
       // Apple returns the name ONLY on first sign-in — capture it now or it is gone forever.
-      const givenName = response.givenName ?? response.fullName?.givenName ?? '';
-      const familyName = response.familyName ?? response.fullName?.familyName ?? '';
+      const givenName = result.givenName ?? '';
+      const familyName = result.familyName ?? '';
       const fullName = `${givenName} ${familyName}`.trim();
       if (fullName && data.session?.user) {
         await supabase.from('profiles').upsert({ id: data.session.user.id, full_name: fullName });
