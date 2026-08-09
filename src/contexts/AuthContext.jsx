@@ -65,8 +65,8 @@ export function AuthProvider({ children }) {
       });
       if (error) return { error };
 
-      const givenName = result.givenName ?? '';
-      const familyName = result.familyName ?? '';
+      const givenName = result.givenName ?? result.fullName?.givenName ?? result.name?.givenName ?? result.profile?.givenName ?? '';
+      const familyName = result.familyName ?? result.fullName?.familyName ?? result.name?.familyName ?? result.profile?.familyName ?? '';
       const fullName = `${givenName} ${familyName}`.trim();
       if (fullName && data.session?.user) {
         await supabase.from('profiles').upsert({ id: data.session.user.id, full_name: fullName });
@@ -112,8 +112,8 @@ export function AuthProvider({ children }) {
       if (error) return { error };
 
       // Apple returns the name ONLY on first sign-in — capture it now or it is gone forever.
-      const givenName = result.givenName ?? '';
-      const familyName = result.familyName ?? '';
+      const givenName = result.givenName ?? result.fullName?.givenName ?? result.name?.givenName ?? result.profile?.givenName ?? '';
+      const familyName = result.familyName ?? result.fullName?.familyName ?? result.name?.familyName ?? result.profile?.familyName ?? '';
       const fullName = `${givenName} ${familyName}`.trim();
       if (fullName && data.session?.user) {
         await supabase.from('profiles').upsert({ id: data.session.user.id, full_name: fullName });
