@@ -2,10 +2,6 @@
   "appId": "com.eventsnapapp.ios",
   "appName": "EventSnap",
   "webDir": "dist",
-  "server": {
-    "url": "https://eventsnapapp.live",
-    "cleartext": false
-  },
   "ios": {
     "contentInset": "always"
   },
