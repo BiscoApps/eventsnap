@@ -20,12 +20,25 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.981094037952-4574jal4cfha76tu99rjeorig8b3uhic</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>EventSnap needs camera access so you can take and share photos and videos at your event.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>EventSnap needs microphone access to record audio with your event videos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>EventSnap needs permission to save photos and videos from your event to your device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
