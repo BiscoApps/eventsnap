@@ -46,7 +46,7 @@ const FaceTagConsent = ({ event, onAccept, onSkip, onRetry }) => {
 
   const matchFaces = async (base64) => {
     try {
-      const guestName = sessionStorage.getItem('guestName') || 'Guest';
+      const guestName = localStorage.getItem('guestName') || 'Guest';
       const response = await fetch(`${API_BASE}/.netlify/functions/match-faces`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

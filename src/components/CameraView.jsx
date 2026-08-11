@@ -5,7 +5,7 @@ import { API_BASE } from '../config.js';
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024;
 const isIOSSafari = /iP(hone|od|ad)/.test(navigator.userAgent) && /WebKit/.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent);
 
-const CameraView = ({ event, onPhotoAdded, onOpenGallery }) => {
+const CameraView = ({ event, onPhotoAdded, onOpenGallery, onGoHome }) => {
 const videoRef = useRef();
 const streamRef = useRef();
 const recorderRef = useRef();
@@ -69,7 +69,7 @@ setUploading(true);
 try {
 const { publicUrl, error: uploadError } = await uploadFile(event.id, file);
 if (uploadError || !publicUrl) { setError('Upload failed. Please try again.'); return; }
-const rawName = sessionStorage.getItem('guestName') || 'Guest';
+const rawName = localStorage.getItem('guestName') || 'Guest';
 const guestName = rawName.replace(/<[^>]*>/g, '').trim() || 'Guest';
 const moderationStatus = event.moderation_enabled ? 'pending' : 'approved';
 const isVideo = file.type.startsWith('video/');
@@ -200,6 +200,13 @@ try { await track.applyConstraints({ advanced: [{ torch: newFlash }] }); } catch
 }
 };
 
+const handleGoHome = () => {
+if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+if (timerRef.current) clearInterval(timerRef.current);
+if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+if (onGoHome) onGoHome();
+};
+
 if (cameraError) {
 return (
 <div style={{ width: '100%', height: '100%', background: '#111', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', padding: 24, textAlign: 'center' }}>
@@ -242,6 +249,10 @@ Uploading...
 {error}
 </div>
 )}
+
+<button onClick={handleGoHome} aria-label="Back to home" style={{ position: 'absolute', top: 20, left: 16, minWidth: 44, minHeight: 44, padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 22, background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontSize: '0.7rem', letterSpacing: '0.08em', fontFamily: 'Jost, sans-serif', cursor: 'pointer' }}>
+← HOME
+</button>
 
 <div style={{ position: 'absolute', top: 20, right: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
 <button onClick={handleFlash} style={{ width: 44, height: 44, borderRadius: '50%', background: flashOn ? 'rgba(255,220,0,0.85)' : 'rgba(0,0,0,0.45)', border: 'none', cursor: recording ? 'default' : 'pointer', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: recording ? 0.4 : 1 }}>

@@ -10,7 +10,7 @@ const NamePrompt = ({ eventName, onJoin }) => {
       setError('Please enter your name');
       return;
     }
-    sessionStorage.setItem('guestName', trimmed);
+    localStorage.setItem('guestName', trimmed);
     onJoin(trimmed);
   };
 

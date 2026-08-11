@@ -17,7 +17,7 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
   const [loading, setLoading] = useState(true);
   const [upgradeBanner, setUpgradeBanner] = useState(upgraded);
   const [notFound, setNotFound] = useState(false);
-  const [guestName, setGuestName] = useState(() => sessionStorage.getItem('guestName') || '');
+  const [guestName, setGuestName] = useState(() => localStorage.getItem('guestName') || '');
   const [photoCount, setPhotoCount] = useState(0);
   const [faceFilter, setFaceFilter] = useState(null); // null = show all, array = show filtered
   // setFaceFilter(null) is a no-op when faceFilter is already null — React bails out and the
@@ -177,16 +177,25 @@ const EventPage = ({ identifier, upgraded, onNavigate, toast }) => {
                 event={event}
                 onPhotoAdded={loadPhotos}
                 onOpenGallery={() => setActivePanel('gallery')}
+                onGoHome={() => onNavigate('home')}
               />
             </div>
             <div style={{ minWidth: '100%', height: '100%', overflowY: 'auto', display: activePanel === 'gallery' ? 'block' : 'none' }}>
               <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <button
                   onClick={() => setActivePanel('camera')}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B', fontSize: '0.82rem', fontFamily: "'Courier Prime', monospace", marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}
                 >
                   ← Camera
                 </button>
+                <button
+                  onClick={() => onNavigate('home')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B8860B', fontSize: '0.82rem', fontFamily: "'Courier Prime', monospace", marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                  ← HOME
+                </button>
+                </div>
                 <UploadButton event={event} onPhotoAdded={loadPhotos} />
                 <Gallery photos={displayPhotos} eventName={event.title} theme={event.theme || 'classic'} onPhotoClick={(p) => setLightboxIndex(displayPhotos.findIndex(photo => photo.id === p.id))} />
                 <Lightbox item={lightboxIndex !== null ? displayPhotos[lightboxIndex] : null} photos={displayPhotos} currentIndex={lightboxIndex} onNavigate={setLightboxIndex} eventName={event.title} onClose={() => setLightboxIndex(null)} />

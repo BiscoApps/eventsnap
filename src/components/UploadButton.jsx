@@ -79,7 +79,7 @@ const UploadButton = ({ event, onPhotoAdded }) => {
         }
 
         // Get guest name from session
-        const rawName = sessionStorage.getItem('guestName') || 'Guest';
+        const rawName = localStorage.getItem('guestName') || 'Guest';
         const guestName = rawName.replace(/<[^>]*>/g, '').trim() || 'Guest';
         const moderationStatus = event.moderation_enabled ? 'pending' : 'approved';
 
