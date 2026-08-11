@@ -24,7 +24,7 @@ const Home = ({ onNavigate }) => {
       if (res.ok && result.deleted) {
         // The user no longer exists, so signOut() can reject — swallow it and
         // hard-reload so no stale session survives in memory.
-        try { await signOut(); } catch { /* user already deleted */ }
+        try { await signOut(); } catch (e) { console.warn('signOut failed post-deletion:', e); }
         localStorage.removeItem('proAuth');
         window.location.hash = '/';
         window.location.reload();
