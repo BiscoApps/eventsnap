@@ -213,9 +213,14 @@ return (
 <div style={{ fontSize: '3rem', marginBottom: 16 }}>📷</div>
 <p style={{ fontSize: '1rem', marginBottom: 8 }}>Camera not available</p>
 <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', marginBottom: 24 }}>Check your browser permissions or use the gallery to upload from your camera roll.</p>
+<div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+<button onClick={handleGoHome} style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', padding: '12px 28px', borderRadius: 3, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
+← HOME
+</button>
 <button onClick={onOpenGallery} style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', padding: '12px 28px', borderRadius: 3, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
 Open Gallery →
 </button>
+</div>
 </div>
 );
 }

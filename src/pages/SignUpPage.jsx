@@ -112,6 +112,9 @@ export default function SignUpPage({ onNavigate }) {
         <p style={{ textAlign: 'center', marginTop: 32, fontSize: '0.78rem', color: 'var(--muted)', fontWeight: 300, lineHeight: 1.6 }}>
           Guests don't need to sign in — just scan the QR code at your event
         </p>
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <button onClick={() => onNavigate('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.8rem' }}>← Back to home</button>
+        </div>
       </div>
     </div>
   );

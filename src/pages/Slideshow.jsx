@@ -179,8 +179,7 @@ const Slideshow = ({ eventCode }) => {
 
   // Exit — opened via window.open in the same webview, so there is no browser chrome
   const handleExit = () => {
-    if (window.history.length > 1) window.history.back();
-    else window.location.hash = `#/host/${eventCode}`;
+    window.location.hash = '#/';
   };
 
   const closeButton = (
