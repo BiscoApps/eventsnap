@@ -129,6 +129,9 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
   const [faceDeleteMsg, setFaceDeleteMsg] = useState('');
   const [deleteEventLoading, setDeleteEventLoading] = useState(false);
   const [deleteEventMsg, setDeleteEventMsg] = useState('');
+  const [deleteAccountModal, setDeleteAccountModal] = useState(false);
+  const [deleteAccountLoading, setDeleteAccountLoading] = useState(false);
+  const [deleteAccountMsg, setDeleteAccountMsg] = useState('');
   const [posterDesign, setPosterDesign] = useState('design1');
   const [upgradeModal, setUpgradeModal] = useState(null);
   const [posterHtml, setPosterHtml] = useState(null);
@@ -267,6 +270,35 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
         body: JSON.stringify({ eventCode, field: 'status', value: 'ended', accessToken: session?.access_token }),
       });
       await loadEvent();
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteAccountLoading) return;
+    setDeleteAccountLoading(true);
+    setDeleteAccountMsg('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`${API_BASE}/.netlify/functions/delete-account`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken: session?.access_token, confirm: true }),
+      });
+      const result = await res.json();
+      if (res.ok && result.deleted) {
+        // The user no longer exists, so signOut() can reject — swallow it and
+        // hard-reload so no stale session survives in memory.
+        try { await signOut(); } catch { /* user already deleted */ }
+        localStorage.removeItem('proAuth');
+        window.location.hash = '/';
+        window.location.reload();
+        return;
+      }
+      setDeleteAccountMsg(result.error || 'Something went wrong.');
+      setDeleteAccountLoading(false);
+    } catch {
+      setDeleteAccountMsg('Something went wrong. Please try again.');
+      setDeleteAccountLoading(false);
     }
   };
 
@@ -1697,9 +1729,42 @@ const HostDashboard = ({ eventCode, upgraded, onNavigate, toast }) => {
           {deleteEventMsg && (
             <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 10 }}>{deleteEventMsg}</p>
           )}
+          <div style={{ borderTop: '1px solid rgba(229,62,62,0.2)', marginTop: 20, paddingTop: 20 }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginBottom: 16, lineHeight: 1.6 }}>
+              Permanently delete your account and every event, photo, video, and reel you own. This cannot be undone.
+            </p>
+            <button
+              disabled={deleteAccountLoading}
+              onClick={() => { setDeleteAccountMsg(''); setDeleteAccountModal(true); }}
+              style={{ background: 'none', border: '1px solid rgba(229,62,62,0.3)', color: '#c53030', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}
+            >
+              {deleteAccountLoading ? 'Deleting...' : 'Delete Account'}
+            </button>
+            {deleteAccountMsg && (
+              <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 10 }}>{deleteAccountMsg}</p>
+            )}
+          </div>
         </div>
       </div>
 
+      {deleteAccountModal && (
+        <div className="modal-bg" onClick={() => { if (!deleteAccountLoading) setDeleteAccountModal(false); }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: '#FDFAF2', border: '2px solid #E8D080', boxShadow: '3px 3px 0 #C8A830', padding: 28, maxWidth: 420, width: 'calc(100% - 48px)' }}>
+            <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 12 }}>Delete account?</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>
+              This will permanently delete your account and all events, photos, and reels. This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeleteAccountModal(false)} style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--charcoal)', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
+                Cancel
+              </button>
+              <button onClick={() => { setDeleteAccountModal(false); handleDeleteAccount(); }} style={{ background: '#c53030', border: '1px solid #c53030', color: 'white', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Lightbox item={lightbox} eventName={event.title} onClose={() => setLightbox(null)} />
     </div>
     </div>
