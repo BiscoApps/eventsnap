@@ -12,20 +12,31 @@ export default function SignUpPage({ onNavigate }) {
   const [emailLoading, setEmailLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const isNativeApp = import.meta.env.VITE_NATIVE_APP === 'true';
+  const anyAuthLoading = appleLoading || loading || emailLoading;
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     sessionStorage.setItem('postAuthRedirect', window.location.hash);
-    const handler = isNativeApp ? signUpWithGoogleNative : signInWithGoogle;
-    const { error } = await handler();
-    if (error) setLoading(false);
+    try {
+      const handler = isNativeApp ? signUpWithGoogleNative : signInWithGoogle;
+      await handler();
+    } catch {
+      // silently fail — user cancelled the native sheet or the plugin errored
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAppleSignUp = async () => {
     setAppleLoading(true);
     sessionStorage.setItem('postAuthRedirect', window.location.hash);
-    const { error } = await signUpWithApple();
-    if (error) setAppleLoading(false);
+    try {
+      await signUpWithApple();
+    } catch {
+      // silently fail — user cancelled the native sheet or the plugin errored
+    } finally {
+      setAppleLoading(false);
+    }
   };
 
   const handleEmailSignUp = async () => {
@@ -64,7 +75,7 @@ export default function SignUpPage({ onNavigate }) {
             <>
               <button
                 onClick={handleAppleSignUp}
-                disabled={appleLoading}
+                disabled={anyAuthLoading}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 20px', minHeight: 44, borderRadius: 6, border: 'none', background: '#000000', cursor: appleLoading ? 'default' : 'pointer', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif', fontSize: 17, fontWeight: 500, color: '#FFFFFF', transition: 'all 0.2s ease', opacity: appleLoading ? 0.7 : 1, marginBottom: 12 }}
                 onMouseEnter={(e) => { if (!appleLoading) e.currentTarget.style.background = '#1a1a1a'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = '#000000'; }}
@@ -76,7 +87,7 @@ export default function SignUpPage({ onNavigate }) {
 
               <button
                 onClick={handleGoogleSignIn}
-                disabled={loading}
+                disabled={anyAuthLoading}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '14px 20px', borderRadius: 3, border: '1px solid var(--border)', background: 'white', cursor: loading ? 'default' : 'pointer', fontFamily: "'Jost', sans-serif", fontSize: '0.88rem', fontWeight: 500, color: 'var(--charcoal)', transition: 'all 0.2s ease', opacity: loading ? 0.7 : 1 }}
                 onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(201,168,76,0.15)'; } }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -95,7 +106,7 @@ export default function SignUpPage({ onNavigate }) {
 
               {error && <p style={{ color: '#e53e3e', fontSize: '0.78rem', marginBottom: 12 }}>{error}</p>}
 
-              <button className="btn-gold" onClick={handleEmailSignUp} disabled={emailLoading} style={{ width: '100%', padding: '13px', borderRadius: 3, fontSize: '0.78rem' }}>
+              <button className="btn-gold" onClick={handleEmailSignUp} disabled={anyAuthLoading} style={{ width: '100%', padding: '13px', borderRadius: 3, fontSize: '0.78rem' }}>
                 {emailLoading ? 'Creating account…' : 'Create Account'}
               </button>
 
