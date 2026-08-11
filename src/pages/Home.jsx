@@ -1,6 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../store.js';
+import { API_BASE } from '../config.js';
 
 const Home = ({ onNavigate }) => {
+  const { user, signOut } = useAuth();
+  const [deleteAccountModal, setDeleteAccountModal] = useState(false);
+  const [deleteAccountLoading, setDeleteAccountLoading] = useState(false);
+  const [deleteAccountMsg, setDeleteAccountMsg] = useState('');
+
+  const handleDeleteAccount = async () => {
+    if (deleteAccountLoading) return;
+    setDeleteAccountLoading(true);
+    setDeleteAccountMsg('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`${API_BASE}/.netlify/functions/delete-account`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken: session?.access_token, confirm: true }),
+      });
+      const result = await res.json();
+      if (res.ok && result.deleted) {
+        // The user no longer exists, so signOut() can reject — swallow it and
+        // hard-reload so no stale session survives in memory.
+        try { await signOut(); } catch { /* user already deleted */ }
+        localStorage.removeItem('proAuth');
+        window.location.hash = '/';
+        window.location.reload();
+        return;
+      }
+      setDeleteAccountMsg(result.error || 'Something went wrong.');
+      setDeleteAccountLoading(false);
+    } catch {
+      setDeleteAccountMsg('Something went wrong. Please try again.');
+      setDeleteAccountLoading(false);
+    }
+  };
+
   return (
     <div data-theme="neutral">
     <div style={{
@@ -99,6 +136,40 @@ const Home = ({ onNavigate }) => {
           </div>
         </button>
       </div>
+
+      {user && (
+        <div style={{ marginTop: 56, textAlign: 'center', animation: 'fadeUp 0.6s 0.4s ease both' }}>
+          <button
+            disabled={deleteAccountLoading}
+            onClick={() => { setDeleteAccountMsg(''); setDeleteAccountModal(true); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c53030', fontSize: '0.78rem', fontFamily: "'Courier Prime', monospace", textDecoration: 'underline' }}
+          >
+            {deleteAccountLoading ? 'Deleting account...' : 'Delete my account'}
+          </button>
+          {deleteAccountMsg && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--muted, #8A6800)', marginTop: 10 }}>{deleteAccountMsg}</p>
+          )}
+        </div>
+      )}
+
+      {deleteAccountModal && (
+        <div className="modal-bg" onClick={() => { if (!deleteAccountLoading) setDeleteAccountModal(false); }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: '#FDFAF2', border: '2px solid #E8D080', boxShadow: '3px 3px 0 #C8A830', padding: 28, maxWidth: 420, width: 'calc(100% - 48px)' }}>
+            <h3 className="serif" style={{ fontSize: '1.3rem', fontWeight: 400, marginBottom: 12 }}>Delete account?</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--muted, #8A6800)', lineHeight: 1.6, marginBottom: 20 }}>
+              This will permanently delete your account and all events, photos, and reels. This cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeleteAccountModal(false)} style={{ background: 'none', border: '1px solid var(--border, #E8D080)', color: 'var(--charcoal, #3A2800)', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
+                Cancel
+              </button>
+              <button onClick={() => { setDeleteAccountModal(false); handleDeleteAccount(); }} style={{ background: '#c53030', border: '1px solid #c53030', color: 'white', padding: '8px 16px', borderRadius: 0, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Jost, sans-serif' }}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     </div>
   );

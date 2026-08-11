@@ -7,10 +7,14 @@ const rekognition = new AWS.Rekognition({
   secretAccessKey: process.env.REKOGNITION_SECRET_ACCESS_KEY,
 });
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Conditional so a missing var fails the guard in the handler with a clear
+// error, rather than throwing inside createClient at module load time.
+const supabase = supabaseUrl && serviceRoleKey
+  ? createClient(supabaseUrl, serviceRoleKey)
+  : null;
 
 const rateLimit = new Map();
 const RATE_LIMIT_MAX = 3;
@@ -65,6 +69,12 @@ exports.handler = async (event) => {
   // 1. Method gate
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
+  }
+
+  // 1a. Server config guard.
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error('delete-account: missing SUPABASE_URL/VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+    return { statusCode: 500, body: JSON.stringify({ error: 'Server config incomplete' }) };
   }
 
   // 2. Rate limit — 3/min/IP. This is the most destructive endpoint we have.
