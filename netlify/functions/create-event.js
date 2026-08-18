@@ -37,6 +37,7 @@ exports.handler = async (event) => {
   const rateLimited = checkRateLimit(event);
   if (rateLimited) return rateLimited;
 
+  let payload;
   try {
     let { title, subtitle, date, host, event_slug, cover_photo_url, photographer_id, hostEmail, accessToken } = JSON.parse(event.body);
 
@@ -47,6 +48,7 @@ exports.handler = async (event) => {
     // Verify the JWT and confirm email matches
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
+      console.error('create-event Supabase error:', authError);
       return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
     }
     if (user.email.toLowerCase() !== hostEmail.toLowerCase()) {
@@ -61,7 +63,7 @@ exports.handler = async (event) => {
 
     const code = generateCode();
 
-    const payload = {
+    payload = {
       id: code,
       title,
       subtitle: subtitle || null,
@@ -96,7 +98,7 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, body: JSON.stringify({ data }) };
   } catch (err) {
-    console.error('create-event error:', err);
+    console.error('create-event Supabase error (fallback):', err, 'payload=', JSON.stringify({ ...payload, host_email: '[redacted]' }));
     return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
   }
 };
