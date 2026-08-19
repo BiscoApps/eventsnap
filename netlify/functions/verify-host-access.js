@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -18,27 +19,28 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
   const rateLimited = checkRateLimit(event);
   if (rateLimited) return rateLimited;
   try {
     const { eventCode, accessToken } = JSON.parse(event.body);
     if (!eventCode || !accessToken) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing fields' }) });
     }
 
     // Verify the JWT and extract the real user email — cannot be spoofed
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Invalid token' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Invalid token' }) });
     }
 
     // Read host_email directly from events table via service role
@@ -49,18 +51,18 @@ exports.handler = async (event) => {
       .single();
 
     if (!eventData) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) });
     }
 
     // Legacy events with no host_email — allow any signed-in user (transition state)
     if (!eventData.host_email) {
-      return { statusCode: 200, body: JSON.stringify({ isOwner: true, legacy: true }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ isOwner: true, legacy: true }) });
     }
 
     const isOwner = eventData.host_email.toLowerCase() === user.email.toLowerCase();
-    return { statusCode: 200, body: JSON.stringify({ isOwner }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ isOwner }) });
   } catch (err) {
     console.error('verify-host-access error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

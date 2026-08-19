@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
@@ -7,6 +8,7 @@ const supabase = createClient(
 );
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   const sig = event.headers['stripe-signature'];
   let stripeEvent;
 
@@ -16,7 +18,7 @@ exports.handler = async (event) => {
     );
   } catch (err) {
     console.error('pro-subscription-webhook signature error:', err.message);
-    return { statusCode: 400, body: 'Webhook error' };
+    return withCors({ statusCode: 400, body: 'Webhook error' });
   }
 
   const { type, data } = stripeEvent;
@@ -49,5 +51,5 @@ exports.handler = async (event) => {
       .eq('stripe_subscription_id', subscriptionId);
   }
 
-  return { statusCode: 200, body: 'ok' };
+  return withCors({ statusCode: 200, body: 'ok' });
 };

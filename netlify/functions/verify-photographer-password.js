@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -20,14 +21,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -37,7 +39,7 @@ exports.handler = async (event) => {
     const { email, password } = JSON.parse(event.body);
 
     if (!email || !password) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'email and password are required' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'email and password are required' }) });
     }
 
     const { data, error } = await supabase
@@ -47,7 +49,7 @@ exports.handler = async (event) => {
       .single();
 
     if (error || !data) {
-      return { statusCode: 200, body: JSON.stringify({ valid: false }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ valid: false }) });
     }
 
     const storedHash = data.password_hash;
@@ -56,7 +58,7 @@ exports.handler = async (event) => {
     const bcryptMatch = await bcrypt.compare(password, storedHash);
 
     if (bcryptMatch) {
-      return {
+      return withCors({
         statusCode: 200,
         body: JSON.stringify({
           valid: true,
@@ -68,7 +70,7 @@ exports.handler = async (event) => {
             stripeCustomerId: data.stripe_customer_id,
           },
         }),
-      };
+      });
     }
 
     // Legacy fallback: SHA-256 hex string comparison
@@ -80,7 +82,7 @@ exports.handler = async (event) => {
         .update({ password_hash: newHash })
         .eq('id', data.id);
 
-      return {
+      return withCors({
         statusCode: 200,
         body: JSON.stringify({
           valid: true,
@@ -92,12 +94,12 @@ exports.handler = async (event) => {
             stripeCustomerId: data.stripe_customer_id,
           },
         }),
-      };
+      });
     }
 
-    return { statusCode: 200, body: JSON.stringify({ valid: false }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ valid: false }) });
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };
 

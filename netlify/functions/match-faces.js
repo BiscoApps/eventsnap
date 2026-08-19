@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const AWS = require('aws-sdk');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -26,14 +27,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
   const rateLimited = checkRateLimit(event);
   if (rateLimited) return rateLimited;
@@ -41,10 +43,10 @@ exports.handler = async (event) => {
   try {
     const { eventId, selfieBase64, guestName } = JSON.parse(event.body);
     if (!eventId || !selfieBase64 || !guestName) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
     if (selfieBase64.length > 2 * 1024 * 1024) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Image too large' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Image too large' }) });
     }
     const { data: eventRow, error: eventError } = await supabase
       .from('events')
@@ -52,10 +54,10 @@ exports.handler = async (event) => {
       .eq('id', eventId)
       .single();
     if (eventError || !eventRow) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) });
     }
     if (!eventRow.face_tagging_enabled) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Face tagging not enabled for this event' }) };
+      return withCors({ statusCode: 403, body: JSON.stringify({ error: 'Face tagging not enabled for this event' }) });
     }
 
     const { sanitiseFields } = require('./_sanitise');
@@ -99,12 +101,12 @@ exports.handler = async (event) => {
       }
     }
 
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({ matchingPhotoIds }),
-    };
+    });
   } catch (err) {
     console.error('match-faces error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

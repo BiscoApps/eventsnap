@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -20,14 +21,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -37,7 +39,7 @@ exports.handler = async (event) => {
     let { eventCode, password } = JSON.parse(event.body);
 
     if (!eventCode) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'eventCode is required' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'eventCode is required' }) });
     }
 
     eventCode = eventCode.replace(/[^A-Z0-9]/gi, '').toUpperCase();
@@ -49,22 +51,22 @@ exports.handler = async (event) => {
       .single();
 
     if (error || !data) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) });
     }
 
     if (data.host_password === null) {
-      return { statusCode: 200, body: JSON.stringify({ valid: true, noPassword: true }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ valid: true, noPassword: true }) });
     }
 
     if (!password) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'password is required' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'password is required' }) });
     }
 
     const storedHash = data.host_password;
     const bcryptMatch = await bcrypt.compare(password, storedHash);
 
     if (bcryptMatch) {
-      return { statusCode: 200, body: JSON.stringify({ valid: true }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ valid: true }) });
     }
 
     const crypto = require('crypto');
@@ -74,12 +76,12 @@ exports.handler = async (event) => {
       if (inputBuffer.length === storedBuffer.length && crypto.timingSafeEqual(inputBuffer, storedBuffer)) {
         const newHash = await bcrypt.hash(password, 10);
         await supabase.from('events').update({ host_password: newHash }).eq('id', eventCode);
-        return { statusCode: 200, body: JSON.stringify({ valid: true }) };
+        return withCors({ statusCode: 200, body: JSON.stringify({ valid: true }) });
       }
     } catch { }
 
-    return { statusCode: 200, body: JSON.stringify({ valid: false }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ valid: false }) });
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

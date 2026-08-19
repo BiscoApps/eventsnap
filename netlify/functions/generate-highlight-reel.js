@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -19,14 +20,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -38,7 +40,7 @@ exports.handler = async (event) => {
     const authHeader = event.headers['authorization'] || '';
     const token = authHeader.replace('Bearer ', '').trim();
     if (!token) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
     const { createClient: createUserClient } = require('@supabase/supabase-js');
     const userSupabase = createUserClient(
@@ -47,7 +49,7 @@ exports.handler = async (event) => {
     );
     const { data: { user }, error: authError } = await userSupabase.auth.getUser(token);
     if (authError || !user) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
     const { data: eventData, error: eventError } = await supabase
       .from('events')
@@ -55,12 +57,12 @@ exports.handler = async (event) => {
       .eq('id', eventId)
       .single();
     if (eventError || !eventData || eventData.host_email?.toLowerCase() !== user.email?.toLowerCase()) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+      return withCors({ statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) });
     }
     const safeCount = Math.min(Math.max(parseInt(count) || 20, 1), 100);
 
     if (!eventId) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // Reset previous highlights
@@ -81,12 +83,12 @@ exports.handler = async (event) => {
       await supabase.from('photos').update({ is_highlight: true }).in('id', ids);
     }
 
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({ selected: ids.length })
-    };
+    });
   } catch (err) {
     console.error('generate-highlight-reel error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

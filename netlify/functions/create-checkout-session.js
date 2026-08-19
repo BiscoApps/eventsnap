@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
@@ -20,14 +21,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -49,7 +51,7 @@ exports.handler = async (event) => {
       .single();
 
     if (eventError || !eventRow) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Event not found' }) });
     }
 
     const priceId = tier === 'premium_max'
@@ -65,15 +67,15 @@ exports.handler = async (event) => {
       allow_promotion_codes: true,
     });
 
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({ url: session.url }),
-    };
+    });
   } catch (err) {
     console.error('create-checkout-session error:', err);
-    return {
+    return withCors({
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' }),
-    };
+    });
   }
 };

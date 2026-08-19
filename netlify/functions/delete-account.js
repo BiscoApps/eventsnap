@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const AWS = require('aws-sdk');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -30,7 +31,7 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
@@ -66,15 +67,16 @@ async function wipeStoragePrefix(prefix) {
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   // 1. Method gate
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   // 1a. Server config guard.
   if (!supabaseUrl || !serviceRoleKey) {
     console.error('delete-account: missing SUPABASE_URL/VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-    return { statusCode: 500, body: JSON.stringify({ error: 'Server config incomplete' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Server config incomplete' }) });
   }
 
   // 2. Rate limit — 3/min/IP. This is the most destructive endpoint we have.
@@ -85,18 +87,18 @@ exports.handler = async (event) => {
     // 3. Parse body.
     const { accessToken, confirm } = JSON.parse(event.body);
     if (!accessToken) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // 4. Server-side counterpart to the two-tap confirmation modal.
     if (confirm !== true) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Confirmation required' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Confirmation required' }) });
     }
 
     // 5. JWT verification.
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
 
     // 6. Discover owned events.
@@ -112,7 +114,7 @@ exports.handler = async (event) => {
 
     if (eventsError) {
       console.error('delete-account: events lookup error:', eventsError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to load account data' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to load account data' }) });
     }
 
     const events = ownedEvents || [];
@@ -133,7 +135,7 @@ exports.handler = async (event) => {
           rekognitionAbsent++;
         } else {
           console.error('delete-account: Rekognition deleteCollection error:', err);
-          return { statusCode: 500, body: JSON.stringify({ error: 'Failed to delete account (Rekognition)' }) };
+          return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to delete account (Rekognition)' }) });
         }
       }
     }
@@ -278,11 +280,11 @@ exports.handler = async (event) => {
     const { error: deleteUserError } = await supabase.auth.admin.deleteUser(user.id);
     if (deleteUserError) {
       console.error('delete-account: admin.deleteUser error:', deleteUserError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to delete account' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to delete account' }) });
     }
 
     // 18. Success — per-table counts for auditing.
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({
         deleted: true,
@@ -296,9 +298,9 @@ exports.handler = async (event) => {
         rekognition: { deleted: rekognitionDeleted, absent: rekognitionAbsent },
         photographerAccountsSkipped,
       }),
-    };
+    });
   } catch (err) {
     console.error('delete-account error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -19,14 +20,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -36,7 +38,7 @@ exports.handler = async (event) => {
     const { photoId, eventCode } = JSON.parse(event.body);
 
     if (!photoId || typeof photoId !== 'string' || !eventCode || !/^[A-Z0-9]{8}$/.test(eventCode)) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // Fetch the photo and verify it belongs to the event
@@ -48,7 +50,7 @@ exports.handler = async (event) => {
       .single();
 
     if (fetchError || !photo) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Photo not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Photo not found' }) });
     }
 
     // Hide the photo by marking it as reported
@@ -59,12 +61,12 @@ exports.handler = async (event) => {
 
     if (updateError) {
       console.error('report-photo update error:', updateError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to report photo' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to report photo' }) });
     }
 
-    return { statusCode: 200, body: JSON.stringify({ reported: true }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ reported: true }) });
   } catch (err) {
     console.error('report-photo error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

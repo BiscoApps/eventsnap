@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const AWS = require('aws-sdk');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -26,7 +27,7 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
@@ -40,8 +41,9 @@ async function ensureCollection(collectionId) {
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
   const rateLimited = checkRateLimit(event);
   if (rateLimited) return rateLimited;
@@ -49,7 +51,7 @@ exports.handler = async (event) => {
   try {
     const { photoId, photoUrl, eventId } = JSON.parse(event.body);
     if (!photoId || !photoUrl || !eventId) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // Verify photo exists and belongs to the claimed event
@@ -61,13 +63,13 @@ exports.handler = async (event) => {
       .single();
 
     if (photoError || !photoRow) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Photo not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Photo not found' }) });
     }
 
     // Idempotency guard: if this photo has already been indexed, skip AWS entirely.
     // Caps cost at exactly one IndexFaces call per photo, ever — replaying is free.
     if (photoRow.face_vectors) {
-      return { statusCode: 200, body: JSON.stringify({ ok: true, alreadyIndexed: true }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ ok: true, alreadyIndexed: true }) });
     }
 
     // Server-side face-tagging gate (client check is bypassable).
@@ -79,7 +81,7 @@ exports.handler = async (event) => {
       .single();
 
     if (!eventRow || !eventRow.face_tagging_enabled) {
-      return { statusCode: 200, body: JSON.stringify({ ok: true, faceTaggingDisabled: true }) };
+      return withCors({ statusCode: 200, body: JSON.stringify({ ok: true, faceTaggingDisabled: true }) });
     }
 
     const allowedHost = new URL(process.env.SUPABASE_URL).hostname;
@@ -87,10 +89,10 @@ exports.handler = async (event) => {
     try {
       parsedUrl = new URL(photoUrl);
     } catch {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Invalid photo URL' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Invalid photo URL' }) });
     }
     if (!parsedUrl.hostname.endsWith(allowedHost) && !parsedUrl.hostname.includes('supabase.co')) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Invalid photo URL' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Invalid photo URL' }) });
     }
 
     const collectionId = `eventsnap-${eventId}`.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
@@ -124,9 +126,9 @@ exports.handler = async (event) => {
       })
       .eq('id', photoId);
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true, facesIndexed }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ ok: true, facesIndexed }) });
   } catch (err) {
     console.error('process-photo-faces error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

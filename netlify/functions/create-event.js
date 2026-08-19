@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -18,7 +19,7 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
@@ -31,8 +32,9 @@ const generateCode = () => {
 };
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
   const rateLimited = checkRateLimit(event);
   if (rateLimited) return rateLimited;
@@ -42,17 +44,17 @@ exports.handler = async (event) => {
     let { title, subtitle, date, host, event_slug, cover_photo_url, photographer_id, hostEmail, accessToken } = JSON.parse(event.body);
 
     if (!title || !date || !hostEmail || !accessToken) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // Verify the JWT and confirm email matches
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
       console.error('create-event Supabase error:', authError);
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
     if (user.email.toLowerCase() !== hostEmail.toLowerCase()) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+      return withCors({ statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) });
     }
 
     const { sanitiseFields } = require('./_sanitise');
@@ -84,7 +86,7 @@ exports.handler = async (event) => {
 
     if (error) {
       console.error('create-event error:', error);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
     }
 
     // Check ambassador
@@ -96,9 +98,9 @@ exports.handler = async (event) => {
       }).catch(() => {});
     }
 
-    return { statusCode: 200, body: JSON.stringify({ data }) };
+    return withCors({ statusCode: 200, body: JSON.stringify({ data }) });
   } catch (err) {
     console.error('create-event Supabase error (fallback):', err, 'payload=', JSON.stringify({ ...payload, host_email: '[redacted]' }));
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

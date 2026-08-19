@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const AWS = require('aws-sdk');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -26,7 +27,7 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
@@ -62,9 +63,10 @@ async function wipeStoragePrefix(prefix) {
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   // 1. Method gate
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   // 2. Rate limit — tighter than other functions (3/min/IP). This is destructive.
@@ -75,18 +77,18 @@ exports.handler = async (event) => {
     // 3. Parse body — all three fields required.
     const { eventCode, confirmEventCode, accessToken } = JSON.parse(event.body);
     if (!eventCode || !confirmEventCode || !accessToken) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     // 4. Second-confirm guard — protects against stale tabs & fat-finger.
     if (confirmEventCode !== eventCode) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Confirmation mismatch' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Confirmation mismatch' }) });
     }
 
     // 5. JWT verification.
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
 
     // 6. Look up event — need host_email for ownership and cover_photo_url for storage wipe.
@@ -97,14 +99,14 @@ exports.handler = async (event) => {
       .single();
 
     if (!eventData) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) });
     }
 
     // 7. Ownership — mirrors delete-face-data.js exactly:
     //    null/empty host_email is a legacy transition state and passes through;
     //    otherwise emails must match case-insensitively.
     if (!eventData.host_email || eventData.host_email.toLowerCase() !== user.email.toLowerCase()) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+      return withCors({ statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) });
     }
 
     // 8. Rekognition FIRST — biometric data goes before any storage or DB writes.
@@ -119,7 +121,7 @@ exports.handler = async (event) => {
         rekognitionStatus = 'absent';
       } else {
         console.error('delete-event: Rekognition deleteCollection error:', err);
-        return { statusCode: 500, body: JSON.stringify({ error: 'Failed to delete event (Rekognition)' }) };
+        return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to delete event (Rekognition)' }) });
       }
     }
 
@@ -187,11 +189,11 @@ exports.handler = async (event) => {
 
     if (eventDeleteError) {
       console.error('delete-event: events row delete error:', eventDeleteError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to delete event row' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to delete event row' }) });
     }
 
     // 12. Success — return per-table counts and Rekognition status.
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({
         deleted: true,
@@ -201,9 +203,9 @@ exports.handler = async (event) => {
         files: filesDeleted,
         rekognition: rekognitionStatus,
       }),
-    };
+    });
   } catch (err) {
     console.error('delete-event error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };

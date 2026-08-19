@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
@@ -7,6 +8,7 @@ const supabase = createClient(
 );
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   const sig = event.headers['stripe-signature'];
 
   let stripeEvent;
@@ -18,7 +20,7 @@ exports.handler = async (event) => {
     );
   } catch (err) {
     console.error('stripe-webhook signature error:', err.message);
-    return { statusCode: 400, body: 'Webhook error' };
+    return withCors({ statusCode: 400, body: 'Webhook error' });
   }
 
   try {
@@ -35,14 +37,14 @@ exports.handler = async (event) => {
 
         if (error) {
           console.error('stripe-webhook Supabase update error:', error.code);
-          return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+          return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
         }
       }
     }
   } catch (err) {
     console.error('stripe-webhook processing error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 
-  return { statusCode: 200, body: 'ok' };
+  return withCors({ statusCode: 200, body: 'ok' });
 };

@@ -1,3 +1,4 @@
+const { respondPreflight, withCors } = require('./_cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -23,14 +24,15 @@ function checkRateLimit(event) {
   }
   entry.count++;
   if (entry.count > RATE_LIMIT_MAX) {
-    return { statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) };
+    return withCors({ statusCode: 429, body: JSON.stringify({ error: 'Too many requests' }) });
   }
   return null;
 }
 
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return respondPreflight();
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+    return withCors({ statusCode: 405, body: 'Method not allowed' });
   }
 
   const rateLimited = checkRateLimit(event);
@@ -40,11 +42,11 @@ exports.handler = async (event) => {
     const { eventCode, field, value, accessToken } = JSON.parse(event.body);
 
     if (!eventCode || !field || !accessToken) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) });
     }
 
     if (!ALLOWED_FIELDS.includes(field)) {
-      return { statusCode: 400, body: JSON.stringify({ error: `Field '${field}' is not allowed` }) };
+      return withCors({ statusCode: 400, body: JSON.stringify({ error: `Field '${field}' is not allowed` }) });
     }
 
     const STRING_FIELDS = ['brand_color', 'slideshow_transition', 'cover_photo_url'];
@@ -57,7 +59,7 @@ exports.handler = async (event) => {
     // Verify caller is the host
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !user) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) };
+      return withCors({ statusCode: 401, body: JSON.stringify({ error: 'Unauthorised' }) });
     }
 
     const { data: eventData } = await supabase
@@ -67,11 +69,11 @@ exports.handler = async (event) => {
       .single();
 
     if (!eventData) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) };
+      return withCors({ statusCode: 404, body: JSON.stringify({ error: 'Event not found' }) });
     }
 
     if (eventData.host_email && eventData.host_email.toLowerCase() !== user.email.toLowerCase()) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+      return withCors({ statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) });
     }
 
     const { error } = await supabase
@@ -81,15 +83,15 @@ exports.handler = async (event) => {
 
     if (error) {
       console.error('update-event-setting error:', error);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to update event' }) };
+      return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Failed to update event' }) });
     }
 
-    return {
+    return withCors({
       statusCode: 200,
       body: JSON.stringify({ success: true }),
-    };
+    });
   } catch (err) {
     console.error('update-event-setting error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
+    return withCors({ statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) });
   }
 };
